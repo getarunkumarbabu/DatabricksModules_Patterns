@@ -49,6 +49,10 @@ module "example_vector_search" {
 | endpoint_name | Name of the endpoint for the vector search index | `string` | n/a | yes |
 | primary_key | Primary key column name for the index | `string` | n/a | yes |
 | index_type | Type of the vector search index | `string` | `"APPROXIMATE_NEAREST_NEIGHBOR"` | no |
+| delta_sync_index_spec | Delta sync index specification | `object` | `null` | no |
+| source | Source configuration for the vector search index | `object` | `null` | no |
+| index_config | Configuration for the vector search index | `object` | `null` | no |
+| index_type | Type of the vector search index | `string` | `"APPROXIMATE_NEAREST_NEIGHBOR"` | no |
 | source | Source configuration for the vector search index | `object` | `null` | no |
 | schema | Schema definition for the vector search index | `map(object)` | n/a | yes |
 

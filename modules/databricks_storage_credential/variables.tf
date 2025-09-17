@@ -15,38 +15,35 @@ variable "owner" {
   default     = null
 }
 
-variable "aws_iam_role" {
-  description = "AWS IAM role configuration"
-  type = object({
-    role_arn = string
-  })
-  default = null
-}
-
 variable "azure_managed_identity" {
-  description = "Azure managed identity configuration"
+  description = "Azure managed identity configuration for accessing Azure storage. Requires Azure Databricks Premium tier."
   type = object({
-    access_connector_id = string
+    access_connector_id = string # Resource ID of the Azure Databricks access connector
   })
   default = null
+
+  validation {
+    condition = var.azure_managed_identity == null || can(regex("^/subscriptions/[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}/resourceGroups/[^/]+/providers/Microsoft.Databricks/accessConnectors/[^/]+$", var.azure_managed_identity.access_connector_id))
+    error_message = "The access_connector_id must be a valid Azure resource ID for a Databricks access connector."
+  }
 }
 
 variable "azure_service_principal" {
-  description = "Azure service principal configuration"
+  description = "Azure service principal configuration for accessing Azure storage"
   type = object({
-    directory_id   = string
-    application_id = string
-    client_secret  = string
+    directory_id   = string # Azure AD tenant ID
+    application_id = string # Azure AD application ID
+    client_secret  = string # Azure AD client secret
   })
   default = null
-}
 
-variable "databricks_gcp_service_account" {
-  description = "GCP service account configuration"
-  type = object({
-    email = string
-  })
-  default = null
+  validation {
+    condition = var.azure_service_principal == null || (
+      can(regex("^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$", var.azure_service_principal.directory_id)) &&
+      can(regex("^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$", var.azure_service_principal.application_id))
+    )
+    error_message = "The directory_id and application_id must be valid Azure GUID/UUID values."
+  }
 }
 
 variable "force_destroy" {

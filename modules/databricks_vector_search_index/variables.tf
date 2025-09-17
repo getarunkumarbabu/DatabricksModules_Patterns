@@ -19,12 +19,33 @@ variable "index_type" {
   default     = "APPROXIMATE_NEAREST_NEIGHBOR"
 }
 
+variable "delta_sync_index_spec" {
+  description = "Delta sync index specification"
+  type = object({
+    full_sync_frequency = optional(string)
+    continuous         = optional(bool)
+  })
+  default = null
+}
+
 variable "source" {
   description = "Source configuration for the vector search index"
   type = object({
     table    = string
     filter   = optional(string)
     pipeline = optional(string)
+  })
+  default = null
+}
+
+variable "index_config" {
+  description = "Configuration for the vector search index"
+  type = object({
+    embedding_source_columns  = optional(list(string))
+    embedding_model_endpoint  = optional(string)
+    embedding_vector_column  = optional(string)
+    embedding_dimension      = optional(number)
+    metric_type             = optional(string)
   })
   default = null
 }

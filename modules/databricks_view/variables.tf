@@ -24,10 +24,26 @@ variable "query" {
   type        = string
 }
 
+variable "cluster_id" {
+  description = "ID of the cluster to use for view execution"
+  type        = string
+  default     = null
+}
+
+variable "is_temp" {
+  description = "Whether to create a temporary view"
+  type        = bool
+  default     = false
+}
+
 variable "grants" {
   description = "Grants for the view"
   type = list(object({
     principal  = string
+    privileges = list(string)
+  }))
+  default = null
+}
     privileges = list(string)
   }))
   default = null

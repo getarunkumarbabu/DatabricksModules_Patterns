@@ -38,6 +38,8 @@ module "example_view" {
 | schema_name | Name of the schema where the view will be created | `string` | n/a | yes |
 | comment | Comment description for the view | `string` | `null` | no |
 | query | SQL query that defines the view | `string` | n/a | yes |
+| cluster_id | ID of the cluster to use for view execution | `string` | `null` | no |
+| is_temp | Whether to create a temporary view | `bool` | `false` | no |
 | grants | Grants for the view | `list(object({ principal = string, privileges = list(string) }))` | `null` | no |
 
 ## Outputs

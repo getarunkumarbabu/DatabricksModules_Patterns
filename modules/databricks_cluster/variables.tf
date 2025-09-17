@@ -150,28 +150,23 @@ variable "init_scripts" {
 }
 
 variable "libraries" {
-  description = "Libraries to install on cluster startup. At least one of jar, egg, whl, pypi, maven, or cran must be specified per entry."
+  description = "Libraries to install on cluster startup. Currently supports jar and whl libraries only."
   type = list(object({
-    jar   = optional(string)
-    egg   = optional(string)
-    whl   = optional(string)
-    pypi  = optional(string)
-    maven = optional(string)
-    cran  = optional(string)
+    jar = optional(string)
+    whl = optional(string)
   }))
   default = null
 
   validation {
     condition     = var.libraries == null || alltrue([
-      for lib in var.libraries : (lib.jar != null || lib.egg != null || lib.whl != null || 
-                                lib.pypi != null || lib.maven != null || lib.cran != null)
+      for lib in var.libraries : (lib.jar != null || lib.whl != null)
     ])
-    error_message = "At least one library type must be specified for each library entry."
+    error_message = "At least one library type (jar or whl) must be specified for each library entry."
   }
 }
 
 variable "cluster_log_conf" {
-  description = "Cluster log delivery configuration for DBFS or Azure storage destinations."
+  description = "Cluster log delivery configuration for file destinations."
   type = object({
     destination = string  # DBFS destination path starting with dbfs:/
   })

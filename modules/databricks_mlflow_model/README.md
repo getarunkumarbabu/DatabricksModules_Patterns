@@ -1,15 +1,16 @@
 # Databricks MLflow Model Module
 
-This module manages MLflow models in Databricks, allowing you to track and version machine learning models.
+This module creates an MLflow model in Databricks.
 
-## Usage
+## Example Usage
 
 ```hcl
 module "mlflow_model" {
   source = "./modules/databricks_mlflow_model"
 
   name        = "my-model"
-  description = "My MLflow model for production use"
+  description = "My MLflow model"
+  labels      = ["production", "ml"]
 }
 ```
 
@@ -26,16 +27,23 @@ module "mlflow_model" {
 |------|---------|
 | databricks | >= 1.0.0 |
 
+## Resources
+
+| Name | Type |
+|------|------|
+| [databricks_mlflow_model.this](https://registry.terraform.io/providers/databricks/databricks/latest/docs/resources/mlflow_model) | resource |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| name | The name of the MLflow model | `string` | n/a | yes |
-| description | Description of the MLflow model | `string` | `null` | no |
+| name | Name of the MLflow model | string | n/a | yes |
+| description | Description of the MLflow model | string | null | no |
+| labels | Labels to be applied to the MLflow model | list(string) | [] | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| model_id | The ID of the MLflow model |
-| model | The full MLflow model resource |
+| id | ID of the MLflow model |
+| latest_versions | Latest versions of the MLflow model |

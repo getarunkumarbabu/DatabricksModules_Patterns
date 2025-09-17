@@ -1,39 +1,49 @@
-variable "name" {
-  description = "Name of the provider"
-  type        = string
-}
-
-variable "comment" {
-  description = "Comment describing the provider"
+variable "azure_workspace_resource_id" {
+  description = "The Azure resource ID for the Databricks workspace"
   type        = string
   default     = null
 }
 
-variable "authentication_type" {
-  description = "Authentication type for the provider"
+variable "host" {
+  description = "The Databricks host URL"
   type        = string
-  validation {
-    condition     = contains(["TOKEN", "OAUTH"], var.authentication_type)
-    error_message = "Authentication type must be either TOKEN or OAUTH."
-  }
-}
-
-variable "recipient_profile_str" {
-  description = "The recipient profile configuration in JSON format"
-  type        = string
+  default     = null
 }
 
 variable "token" {
-  description = "Authentication token for TOKEN authentication type"
+  description = "The Databricks personal access token"
   type        = string
   default     = null
   sensitive   = true
 }
 
-variable "delta_sharing_scope" {
-  description = "Delta sharing scope configuration"
+variable "azure_client_id" {
+  description = "Azure client ID for service principal"
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
+variable "azure_client_secret" {
+  description = "Azure client secret for service principal"
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
+variable "azure_tenant_id" {
+  description = "Azure tenant ID for service principal"
+  type        = string
+  default     = null
+}
+
+variable "auth" {
+  description = "Authentication configuration block"
   type = object({
-    scope = string
+    azure_client_id     = string
+    azure_client_secret = string
+    azure_tenant_id     = string
   })
-  default = null
+  default   = null
+  sensitive = true
 }

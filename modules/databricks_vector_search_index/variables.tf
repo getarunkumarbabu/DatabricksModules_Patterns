@@ -1,61 +1,43 @@
-variable "index_name" {
+variable "name" {
   description = "Name of the vector search index"
   type        = string
 }
 
-variable "endpoint_name" {
-  description = "Name of the endpoint for the vector search index"
+variable "catalog" {
+  description = "Name of the catalog containing the source table"
+  type        = string
+}
+
+variable "schema" {
+  description = "Name of the schema containing the source table"
+  type        = string
+}
+
+variable "table_name" {
+  description = "Name of the source table"
   type        = string
 }
 
 variable "primary_key" {
-  description = "Primary key column name for the index"
+  description = "Primary key column in the source table"
   type        = string
 }
 
-variable "index_type" {
-  description = "Type of the vector search index"
+variable "embedding_size" {
+  description = "Size of the embedding vectors"
+  type        = number
+}
+
+variable "field_mappings" {
+  description = "Field mappings for the vector search index"
+  type = object({
+    field_name = string
+    source     = string
+  })
+}
+
+variable "endpoint_name" {
+  description = "Name of the endpoint to use for vector search"
   type        = string
-  default     = "APPROXIMATE_NEAREST_NEIGHBOR"
-}
-
-variable "delta_sync_index_spec" {
-  description = "Delta sync index specification"
-  type = object({
-    full_sync_frequency = optional(string)
-    continuous         = optional(bool)
-  })
-  default = null
-}
-
-variable "source" {
-  description = "Source configuration for the vector search index"
-  type = object({
-    table    = string
-    filter   = optional(string)
-    pipeline = optional(string)
-  })
-  default = null
-}
-
-variable "index_config" {
-  description = "Configuration for the vector search index"
-  type = object({
-    embedding_source_columns  = optional(list(string))
-    embedding_model_endpoint  = optional(string)
-    embedding_vector_column  = optional(string)
-    embedding_dimension      = optional(number)
-    metric_type             = optional(string)
-  })
-  default = null
-}
-
-variable "schema" {
-  description = "Schema definition for the vector search index"
-  type = map(object({
-    type       = string
-    dimension  = optional(number)
-    is_primary = optional(bool)
-    is_nullable = optional(bool)
-  }))
+  default     = null
 }

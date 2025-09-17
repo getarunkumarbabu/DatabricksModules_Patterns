@@ -1,20 +1,20 @@
 variable "name" {
-  description = "The name of the model serving endpoint"
+  description = "Name of the model serving endpoint"
   type        = string
 }
 
 variable "model_name" {
-  description = "The name of the MLflow model to serve"
+  description = "Name of the model to serve"
   type        = string
 }
 
 variable "model_version" {
-  description = "The version of the MLflow model to serve"
+  description = "Version of the model to serve"
   type        = string
 }
 
 variable "workload_size" {
-  description = "The workload size for the serving endpoint (Small, Medium, Large)"
+  description = "Size of the workload (Small, Medium, Large)"
   type        = string
   default     = "Small"
   validation {
@@ -24,7 +24,7 @@ variable "workload_size" {
 }
 
 variable "scale_to_zero_enabled" {
-  description = "Whether to enable scale-to-zero functionality"
+  description = "Whether to enable scale-to-zero"
   type        = bool
   default     = true
 }

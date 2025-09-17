@@ -1,33 +1,47 @@
 # Databricks Widget Module
 
-This module manages SQL Widgets in Databricks dashboards.
+This module manages widgets in Databricks notebooks.
 
-## Usage
+## Example Usage
 
 ```hcl
-module "example_widget" {
+# Text Widget
+module "text_widget" {
   source = "./modules/databricks_widget"
 
-  query_id         = "123456"
-  dashboard_id     = "789012"
-  visualization_id = "345678"
-  title           = "Monthly Revenue Trends"
-  type            = "chart"
-  width           = 6
+  notebook_id = "123456"
+  position    = 1
 
-  options = {
-    chart_type = "line"
-    x_axis     = "date"
-    y_axis     = "revenue"
+  text_widget = {
+    value = "Default text value"
   }
+}
 
-  parameter_mappings = {
-    name    = "date_range"
-    type    = "date_range"
-    map_to  = "date_column"
-    default = "last_30_days"
-    title   = "Select Date Range"
-    global  = true
+# Combobox Widget
+module "combobox_widget" {
+  source = "./modules/databricks_widget"
+
+  notebook_id = "123456"
+  position    = 2
+
+  combobox_widget = {
+    label         = "Select an option"
+    default_value = "option1"
+    options       = ["option1", "option2", "option3"]
+  }
+}
+
+# Multiselect Widget
+module "multiselect_widget" {
+  source = "./modules/databricks_widget"
+
+  notebook_id = "123456"
+  position    = 3
+
+  multiselect_widget = {
+    label         = "Select options"
+    default_value = ["option1"]
+    options       = ["option1", "option2", "option3"]
   }
 }
 ```
@@ -36,27 +50,38 @@ module "example_widget" {
 
 | Name | Version |
 |------|---------|
+| terraform | >= 0.13 |
 | databricks | >= 1.0.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| databricks | >= 1.0.0 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [databricks_widget.this](https://registry.terraform.io/providers/databricks/databricks/latest/docs/resources/widget) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| query_id | ID of the SQL query associated with this widget | `string` | n/a | yes |
-| dashboard_id | ID of the dashboard containing this widget | `string` | n/a | yes |
-| visualization_id | ID of the visualization for this widget | `string` | n/a | yes |
-| title | Title of the widget | `string` | n/a | yes |
-| type | Type of the widget | `string` | n/a | yes |
-| width | Width of the widget | `number` | 3 | no |
-| options | Configuration options for the widget | `any` | `{}` | no |
-| parameter_mappings | Parameter mappings for the widget | `object` | `null` | no |
+| notebook_id | The ID of the notebook to add the widget to | string | n/a | yes |
+| position | The position of the widget in the notebook | number | n/a | yes |
+| text_widget | Configuration for a text widget | object | null | no |
+| combobox_widget | Configuration for a combobox widget | object | null | no |
+| multiselect_widget | Configuration for a multiselect widget | object | null | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| widget_id | The ID of the created SQL widget |
-| query_id | The ID of the associated SQL query |
-| dashboard_id | The ID of the dashboard containing this widget |
-| visualization_id | The ID of the visualization for this widget |
-| title | The title of the widget |
+| widget_id | ID of the created widget |
+
+## Notes
+
+- Only one widget type can be specified at a time
+- Position determines the order of widgets in the notebook

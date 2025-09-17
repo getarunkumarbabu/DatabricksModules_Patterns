@@ -1,57 +1,67 @@
 # Databricks Permissions Module
 
-This module manages permissions using the `databricks_permissions` resource.
+This module manages permissions for various Databricks resources.
 
-## Inputs
-
-- `cluster_policy_id` (string, optional) - Cluster policy ID
-- `instance_pool_id` (string, optional) - Instance pool ID
-- `job_id` (string, optional) - Job ID
-- `notebook_path` (string, optional) - Notebook path
-- `access_controls` (list) - Access control rules:
-  - permission_level
-  - user_name (optional)
-  - group_name (optional)
-  - service_principal_name (optional)
-
-## Outputs
-
-- `object_type` - Type of object
-- `object_id` - Object ID
-
-## Example
+## Example Usage
 
 ```hcl
-module "notebook_permissions" {
-  source = "../modules/databricks_permissions"
-  
-  notebook_path = "/Shared/MyNotebook"
+module "permissions" {
+  source = "./modules/databricks_permissions"
+
+  sql_endpoint_id = "endpoint-id"
   
   access_controls = [
     {
-      permission_level = "CAN_RUN"
-      group_name      = "data-scientists"
+      group_name       = "data-scientists"
+      permission_level = "CAN_USE"
     },
     {
-      permission_level = "CAN_MANAGE"
-      user_name       = "admin@example.com"
+      service_principal_name = "automation-sp"
+      permission_level      = "CAN_MANAGE"
+    },
+    {
+      user_name        = "john.doe@example.com"
+      permission_level = "IS_OWNER"
     }
   ]
 }
 ```
 
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.13 |
+| databricks | >= 1.0.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| databricks | >= 1.0.0 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [databricks_permissions.this](https://registry.terraform.io/providers/databricks/databricks/latest/docs/resources/permissions) | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| sql_endpoint_id | The ID of the SQL endpoint to set permissions on | string | null | no |
+| cluster_id | The ID of the cluster to set permissions on | string | null | no |
+| job_id | The ID of the job to set permissions on | string | null | no |
+| notebook_path | The path of the notebook to set permissions on | string | null | no |
+| pipeline_id | The ID of the pipeline to set permissions on | string | null | no |
+| access_controls | List of access control configurations | list(object) | [] | no |
+
 ## Permission Levels
 
-Common permission levels:
-- Notebooks: CAN_READ, CAN_RUN, CAN_EDIT, CAN_MANAGE
-- Jobs: CAN_VIEW, CAN_MANAGE
-- Clusters: CAN_ATTACH_TO, CAN_RESTART, CAN_MANAGE
-- Instance Pools: CAN_ATTACH_TO, CAN_MANAGE
-
-## Notes
-
-- Only one object ID should be specified
-- Permission levels vary by object type
-- Consider using groups for easier management
-- Service principals useful for automation
-- Some objects inherit workspace-level permissions
+The following permission levels are supported:
+- CAN_USE: User can use the resource
+- CAN_MANAGE: User can manage the resource
+- CAN_VIEW: User can view the resource
+- CAN_RUN: User can run the resource
+- IS_OWNER: User is the owner of the resource

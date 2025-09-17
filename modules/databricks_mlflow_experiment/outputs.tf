@@ -1,9 +1,9 @@
-output "experiment_id" {
-  description = "The ID of the MLflow experiment"
+output "id" {
+  description = "ID of the MLflow experiment"
   value       = databricks_mlflow_experiment.this.id
 }
 
-output "experiment" {
-  description = "The full MLflow experiment resource"
-  value       = databricks_mlflow_experiment.this
+output "experiment_id" {
+  description = "Experiment ID"
+  value       = databricks_mlflow_experiment.this.experiment_id
 }

@@ -1,24 +1,17 @@
-resource "databricks_sql_widget" "this" {
-  query_id = var.query_id
-  dashboard_id = var.dashboard_id
+resource "databricks_widget" "this" {
+  name     = var.name
   visualization_id = var.visualization_id
+  position = var.position
+  description = var.description
 
-  title = var.title
-  type  = var.type
-  width = var.width
-
-  options = jsonencode(var.options)
-
-  dynamic "parameter_mappings" {
-    for_each = var.parameter_mappings != null ? [var.parameter_mappings] : []
+  dynamic "parameter" {
+    for_each = var.parameters
     content {
-      name       = parameter_mappings.value.name
-      type       = parameter_mappings.value.type
-      mapTo      = parameter_mappings.value.map_to
-      default    = parameter_mappings.value.default
-      title      = parameter_mappings.value.title
-      value      = parameter_mappings.value.value
-      global     = parameter_mappings.value.global
+      name         = parameter.value.name
+      title        = parameter.value.title
+      text_value   = try(parameter.value.text_value, null)
+      date_value   = try(parameter.value.date_value, null)
+      number_value = try(parameter.value.number_value, null)
     }
   }
 }

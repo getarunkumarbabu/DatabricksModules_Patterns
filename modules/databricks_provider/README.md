@@ -1,52 +1,44 @@
 # Databricks Provider Module
 
-This module manages Delta Sharing providers in Databricks, allowing you to configure external data providers.
+This module configures the Databricks provider with Azure integration support.
 
-## Usage
+## Example Usage
 
 ```hcl
-# Example with token-based authentication
-module "token_provider" {
+module "databricks_provider" {
   source = "./modules/databricks_provider"
 
-  name                = "external-provider"
-  comment             = "External data provider configuration"
-  authentication_type = "TOKEN"
+  azure_workspace_resource_id = "/subscriptions/.../resourceGroups/.../providers/Microsoft.Databricks/workspaces/example"
+  host                       = "https://adb-workspace.azuredatabricks.net"
   
-  recipient_profile_str = jsonencode({
-    shareCredentialsVersion = 1
-    endpoint               = "https://sharing.provider.com"
-    bearerToken           = "your-token"
-  })
-  
-  delta_sharing_scope = {
-    scope = "ALL_PRIVILEGES"
-  }
-  
-  token = "provider-auth-token"
+  # Using Service Principal authentication
+  azure_client_id     = "client-id"
+  azure_client_secret = "client-secret"
+  azure_tenant_id     = "tenant-id"
 }
+```
 
-# Example with OAuth authentication
-module "oauth_provider" {
+## Authentication Methods
+
+1. Azure Workspace Resource ID + Service Principal:
+```hcl
+module "databricks_provider" {
   source = "./modules/databricks_provider"
 
-  name                = "oauth-provider"
-  comment             = "OAuth-based data provider"
-  authentication_type = "OAUTH"
-  
-  recipient_profile_str = jsonencode({
-    shareCredentialsVersion = 1
-    endpoint               = "https://sharing.provider.com"
-    oauth2 = {
-      clientId     = "client-id"
-      clientSecret = "client-secret"
-      scope        = "read:data"
-    }
-  })
-  
-  delta_sharing_scope = {
-    scope = "READ_ONLY"
-  }
+  azure_workspace_resource_id = "/subscriptions/.../resourceGroups/.../providers/Microsoft.Databricks/workspaces/example"
+  azure_client_id            = "client-id"
+  azure_client_secret        = "client-secret"
+  azure_tenant_id           = "tenant-id"
+}
+```
+
+2. Personal Access Token:
+```hcl
+module "databricks_provider" {
+  source = "./modules/databricks_provider"
+
+  host  = "https://adb-workspace.azuredatabricks.net"
+  token = "dapi1234567890"
 }
 ```
 
@@ -61,26 +53,14 @@ module "oauth_provider" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| name | Name of the provider | string | n/a | yes |
-| comment | Comment describing the provider | string | null | no |
-| authentication_type | Authentication type (TOKEN or OAUTH) | string | n/a | yes |
-| recipient_profile_str | Recipient profile config in JSON | string | n/a | yes |
-| token | Auth token for TOKEN type | string | null | no |
-| delta_sharing_scope | Delta sharing scope config | object | null | no |
+| azure_workspace_resource_id | The Azure resource ID for the Databricks workspace | string | null | no |
+| host | The Databricks host URL | string | null | no |
+| token | The Databricks personal access token | string | null | no |
+| azure_client_id | Azure client ID for service principal | string | null | no |
+| azure_client_secret | Azure client secret for service principal | string | null | no |
+| azure_tenant_id | Azure tenant ID for service principal | string | null | no |
+| auth | Authentication configuration block | object | null | no |
 
-## Outputs
+## Security Note
 
-| Name | Description |
-|------|-------------|
-| provider_id | ID of the created provider |
-| provider_name | Name of the provider |
-| profile_str | Recipient profile configuration |
-
-## Notes
-
-- Choose between TOKEN and OAUTH authentication
-- Properly structure recipient_profile_str JSON
-- Consider security when handling tokens
-- Use appropriate sharing scope
-- Monitor provider connections
-- Keep authentication credentials secure
+All sensitive variables (token, client secrets) are marked as sensitive to ensure they are not logged or displayed in outputs.

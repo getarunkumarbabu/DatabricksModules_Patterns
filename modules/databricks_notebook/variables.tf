@@ -1,24 +1,25 @@
 variable "path" {
-  description = "The path where the notebook will be stored in the workspace"
+  description = "Path to the notebook in the workspace"
   type        = string
 }
 
 variable "language" {
-  description = "The language of the notebook (PYTHON, R, SCALA, SQL)"
+  description = "Language of the notebook (SCALA, PYTHON, SQL, or R)"
   type        = string
   validation {
-    condition     = contains(["PYTHON", "R", "SCALA", "SQL"], var.language)
-    error_message = "Language must be one of: PYTHON, R, SCALA, SQL."
+    condition     = contains(["SCALA", "PYTHON", "SQL", "R"], var.language)
+    error_message = "Language must be one of: SCALA, PYTHON, SQL, R."
   }
 }
 
 variable "source" {
-  description = "The source URL or path of the notebook"
+  description = "Source path in the local filesystem or URL"
   type        = string
+  default     = null
 }
 
 variable "format" {
-  description = "The format of the notebook (SOURCE, HTML, JUPYTER, DBC)"
+  description = "Format of the notebook (SOURCE, HTML, JUPYTER, DBC)"
   type        = string
   default     = "SOURCE"
   validation {
@@ -27,8 +28,17 @@ variable "format" {
   }
 }
 
-variable "cluster_id" {
-  description = "The ID of the cluster to attach the notebook to"
+variable "content_base64" {
+  description = "Base64 encoded content of the notebook"
   type        = string
   default     = null
+}
+
+variable "cluster" {
+  description = "Cluster configuration for the notebook"
+  type = object({
+    num_workers = optional(number)
+    cluster_id  = optional(string)
+  })
+  default = null
 }

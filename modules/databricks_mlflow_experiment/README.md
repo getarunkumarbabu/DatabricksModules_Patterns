@@ -1,16 +1,15 @@
 # Databricks MLflow Experiment Module
 
-This module manages MLflow experiments in Databricks, allowing you to organize and track machine learning experiments.
+This module creates an MLflow experiment in Databricks.
 
-## Usage
+## Example Usage
 
 ```hcl
 module "mlflow_experiment" {
   source = "./modules/databricks_mlflow_experiment"
 
-  name              = "/my-experiment"
-  description       = "My MLflow experiment for model training"
-  artifact_location = "dbfs:/my-artifacts/experiment1"
+  name              = "my-experiment"
+  artifact_location = "dbfs:/my/artifact/location"
 }
 ```
 
@@ -27,17 +26,22 @@ module "mlflow_experiment" {
 |------|---------|
 | databricks | >= 1.0.0 |
 
+## Resources
+
+| Name | Type |
+|------|------|
+| [databricks_mlflow_experiment.this](https://registry.terraform.io/providers/databricks/databricks/latest/docs/resources/mlflow_experiment) | resource |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| name | The name of the MLflow experiment | `string` | n/a | yes |
-| description | Description of the MLflow experiment | `string` | `null` | no |
-| artifact_location | The location to store run artifacts | `string` | `null` | no |
+| name | Name of the MLflow experiment | string | n/a | yes |
+| artifact_location | Location where artifacts for runs are stored | string | null | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| experiment_id | The ID of the MLflow experiment |
-| experiment | The full MLflow experiment resource |
+| id | ID of the MLflow experiment |
+| experiment_id | Experiment ID |

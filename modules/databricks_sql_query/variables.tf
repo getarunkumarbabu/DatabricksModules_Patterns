@@ -3,26 +3,54 @@ variable "name" {
   type        = string
 }
 
+variable "warehouse_id" {
+  description = "ID of the SQL warehouse to run the query"
+  type        = string
+}
+
 variable "data_source_id" {
-  description = "ID of the data source"
+  description = "ID of the data source to use for the query"
   type        = string
 }
 
 variable "query" {
-  description = "SQL query text"
+  description = "The SQL query text"
   type        = string
 }
 
+variable "run_as_role" {
+  description = "Role to run the query as"
+  type        = string
+  default     = null
+}
+
+variable "parameters" {
+  description = "List of query parameters"
+  type = list(object({
+    name  = string
+    title = string
+    type  = string
+    value = string
+  }))
+  default = null
+}
+
+variable "schedule_enabled" {
+  description = "Whether to enable scheduling for the query"
+  type        = bool
+  default     = false
+}
+
 variable "schedule_interval_seconds" {
-  description = "Interval in seconds between query runs"
+  description = "How often to run the query (in seconds)"
   type        = number
   default     = null
 }
 
-variable "schedule_timezone" {
-  description = "Timezone for the schedule"
+variable "schedule_cron_expression" {
+  description = "Cron expression for query scheduling"
   type        = string
-  default     = "UTC"
+  default     = null
 }
 
 variable "schedule_paused" {
@@ -31,8 +59,10 @@ variable "schedule_paused" {
   default     = false
 }
 
-variable "tags" {
-  description = "Tags to apply to the query"
-  type        = map(string)
-  default     = {}
+variable "query_options" {
+  description = "Query execution options"
+  type = object({
+    cell_size = optional(string)
+  })
+  default = null
 }

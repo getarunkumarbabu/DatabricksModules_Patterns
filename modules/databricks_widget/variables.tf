@@ -1,50 +1,52 @@
-variable "query_id" {
-  description = "ID of the SQL query associated with this widget"
+variable "notebook_id" {
+  description = "The ID of the notebook to add the widget to"
   type        = string
 }
 
-variable "dashboard_id" {
-  description = "ID of the dashboard containing this widget"
-  type        = string
-}
-
-variable "visualization_id" {
-  description = "ID of the visualization for this widget"
-  type        = string
-}
-
-variable "title" {
-  description = "Title of the widget"
-  type        = string
-}
-
-variable "type" {
-  description = "Type of the widget"
-  type        = string
-}
-
-variable "width" {
-  description = "Width of the widget"
+variable "position" {
+  description = "The position of the widget in the notebook"
   type        = number
-  default     = 3
 }
 
-variable "options" {
-  description = "Configuration options for the widget"
-  type        = any
-  default     = {}
-}
-
-variable "parameter_mappings" {
-  description = "Parameter mappings for the widget"
+variable "text_widget" {
+  description = "Configuration for a text widget"
   type = object({
-    name    = string
-    type    = string
-    map_to  = string
-    default = optional(string)
-    title   = optional(string)
-    value   = optional(string)
-    global  = optional(bool)
+    value = string
   })
   default = null
+}
+
+variable "combobox_widget" {
+  description = "Configuration for a combobox widget"
+  type = object({
+    label         = string
+    default_value = string
+    options       = list(string)
+  })
+  default = null
+}
+
+variable "multiselect_widget" {
+  description = "Configuration for a multiselect widget"
+  type = object({
+    label         = string
+    default_value = list(string)
+    options       = list(string)
+  })
+  default = null
+}
+
+variable "validate_widget_types" {
+  type = string
+  description = "Internal validation to ensure only one widget type is specified"
+  default = null
+  validation {
+    condition = (
+      var.text_widget != null && var.combobox_widget == null && var.multiselect_widget == null ||
+      var.text_widget == null && var.combobox_widget != null && var.multiselect_widget == null ||
+      var.text_widget == null && var.combobox_widget == null && var.multiselect_widget != null ||
+      var.text_widget == null && var.combobox_widget == null && var.multiselect_widget == null
+    )
+    error_message = "Only one widget type can be specified at a time."
+  }
 }

@@ -1,5 +1,4 @@
 resource "databricks_mlflow_model" "this" {
-  name              = var.name
-  description       = var.description
-  tags              = var.tags
+  name = var.name
+  // Remove tags and description as they are not supported in the current version
 }

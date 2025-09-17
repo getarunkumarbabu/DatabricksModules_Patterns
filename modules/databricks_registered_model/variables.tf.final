@@ -1,0 +1,14 @@
+variable "name" {
+  description = "Name of the registered model"
+  type        = string
+}
+
+variable "catalog_name" {
+  description = "Name of the catalog"
+  type        = string
+}
+
+variable "schema_name" {
+  description = "Name of the schema"
+  type        = string
+}

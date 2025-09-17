@@ -1,49 +1,45 @@
-variable "view_name" {
-  description = "Name of the SQL view"
+variable "name" {
+  description = "Name of the view"
   type        = string
 }
 
-variable "catalog_name" {
-  description = "Name of the catalog where the view will be created"
+variable "catalog" {
+  description = "Name of the catalog"
   type        = string
 }
 
-variable "schema_name" {
-  description = "Name of the schema where the view will be created"
+variable "schema" {
+  description = "Name of the schema"
+  type        = string
+}
+
+variable "sql" {
+  description = "SQL query defining the view"
   type        = string
 }
 
 variable "comment" {
-  description = "Comment description for the view"
+  description = "Comment for the view"
   type        = string
   default     = null
 }
 
-variable "query" {
-  description = "SQL query that defines the view"
-  type        = string
-}
-
 variable "cluster_id" {
-  description = "ID of the cluster to use for view execution"
+  description = "ID of the cluster to run the view query on"
   type        = string
   default     = null
 }
 
 variable "is_temp" {
-  description = "Whether to create a temporary view"
+  description = "Whether the view is temporary"
   type        = bool
   default     = false
 }
 
-variable "grants" {
-  description = "Grants for the view"
+variable "permissions" {
+  description = "Permissions configuration for the view"
   type = list(object({
     principal  = string
-    privileges = list(string)
-  }))
-  default = null
-}
     privileges = list(string)
   }))
   default = null

@@ -8,13 +8,14 @@ This module manages Databricks SQL views in Unity Catalog.
 module "example_view" {
   source = "./modules/databricks_view"
 
-  view_name    = "my_example_view"
-  catalog_name = "my_catalog"
-  schema_name  = "my_schema"
-  query        = "SELECT * FROM my_table"
-  comment      = "Example view for demonstration"
+  name     = "my_example_view"
+  catalog  = "my_catalog"
+  schema   = "my_schema"
+  sql      = "SELECT * FROM my_table"
+  comment  = "Example view for demonstration"
+  is_temp  = false
 
-  grants = [
+  permissions = [
     {
       principal  = "account users"
       privileges = ["SELECT", "USE_CATALOG"]
@@ -33,14 +34,14 @@ module "example_view" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| view_name | Name of the SQL view | `string` | n/a | yes |
-| catalog_name | Name of the catalog where the view will be created | `string` | n/a | yes |
-| schema_name | Name of the schema where the view will be created | `string` | n/a | yes |
-| comment | Comment description for the view | `string` | `null` | no |
-| query | SQL query that defines the view | `string` | n/a | yes |
-| cluster_id | ID of the cluster to use for view execution | `string` | `null` | no |
-| is_temp | Whether to create a temporary view | `bool` | `false` | no |
-| grants | Grants for the view | `list(object({ principal = string, privileges = list(string) }))` | `null` | no |
+| name | Name of the view | `string` | n/a | yes |
+| catalog | Name of the catalog | `string` | n/a | yes |
+| schema | Name of the schema | `string` | n/a | yes |
+| sql | SQL query defining the view | `string` | n/a | yes |
+| comment | Comment for the view | `string` | `null` | no |
+| cluster_id | ID of the cluster to run the view query on | `string` | `null` | no |
+| is_temp | Whether the view is temporary | `bool` | `false` | no |
+| permissions | Permissions configuration for the view | `list(object({ principal = string, privileges = list(string) }))` | `null` | no |
 
 ## Outputs
 

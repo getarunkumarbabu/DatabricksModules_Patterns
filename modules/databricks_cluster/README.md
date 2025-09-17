@@ -1,16 +1,16 @@
 # Azure Databricks Cluster Module
 
-This comprehensive module manages Azure Databricks compute clusters with support for various Azure VM types and advanced cluster configurations. It provides a flexible interface for creating and managing clusters optimized for various workloads like ETL, ML training, and interactive analytics on Azure Databricks.
+This module manages Azure Databricks compute clusters with support for various Azure VM types and configurations. It provides a flexible interface for creating and managing clusters optimized for various workloads like ETL, ML training, and interactive analytics.
 
 ## Features
 
-- Azure VM type selection and optimization
-- Fixed-size and autoscaling clusters with Azure Spot instances
-- Azure-specific security and networking features
-- Azure Monitor integration for logging
-- Azure Key Vault integration for secrets
-- Library and initialization script management
-- Workload-specific optimizations for Azure
+- Support for Azure VM types and instance pools
+- Fixed-size and autoscaling cluster configurations
+- Azure Spot instance support for cost optimization
+- Integration with Azure security features
+- Custom initialization scripts
+- Library management and dependencies
+- Workload-specific optimizations
 
 ## Requirements
 
@@ -46,28 +46,20 @@ module "dev_cluster" {
 module "ml_cluster" {
   source = "./modules/databricks_cluster"
 
-  cluster_name            = "ml-training-cluster"
-  spark_version          = "13.3.x-cpu-ml-scala2.12"
-  node_type_id          = "Standard_NC6s_v3"
-  driver_node_type_id   = "Standard_DS4_v2"
+  cluster_name         = "ml-training-cluster"
+  spark_version       = "13.3.x-gpu-ml-scala2.12"  # GPU-enabled ML runtime
+  node_type_id       = "Standard_NC6s_v3"         # Azure GPU VM
+  driver_node_type_id = "Standard_DS4_v2"         # Larger driver for ML tasks
   
   autoscale_config = {
     min_workers = 2
     max_workers = 8
   }
 
-  workload_config = {
-    workload_type = "ML"
-    configuration = {
-      "spark.databricks.cluster.profile" = "ML"
-      "spark.databricks.ml.tracking.uri" = "databricks"
-    }
-  }
-
   spark_conf = {
     "spark.databricks.delta.preview.enabled" = "true"
     "spark.databricks.io.cache.enabled"      = "true"
-    "spark.rapids.sql.enabled"               = "true"
+    "spark.rapids.sql.enabled"               = "true"  # GPU acceleration
   }
 
   libraries = [
@@ -75,10 +67,7 @@ module "ml_cluster" {
       pypi = "scikit-learn==1.3.0"
     },
     {
-      pypi = "pytorch==2.0.1"
-    },
-    {
-      whl = "dbfs:/libraries/custom_ml_lib-1.0.0-py3-none-any.whl"
+      pypi = "torch==2.0.1"  # PyTorch for GPU
     }
   ]
 
@@ -108,7 +97,7 @@ module "etl_cluster" {
   azure_attributes = {
     availability = "SPOT_AZURE"
     first_on_demand = 1
-    spot_bid_max_price = 100  # Maximum 100% of on-demand price
+    spot_bid_max_price = -1  # -1 means maximum price for Spot VMs
   }
 
   spark_conf = {
@@ -125,8 +114,12 @@ module "etl_cluster" {
   }
 
   init_scripts = [{
-    destination = "dbfs:/databricks/scripts/init/optimize-azure.sh"
+    destination = "dbfs:/databricks/scripts/init/optimize-etl.sh"
   }]
+
+  cluster_log_conf = {
+    destination = "dbfs:/cluster-logs/etl/"
+  }
 
   custom_tags = {
     environment = "production"
@@ -134,70 +127,34 @@ module "etl_cluster" {
     cost_center = "data_eng"
   }
 }
-  node_type_id  = "Standard_E8ds_v4"
-  
-  autoscale_config = {
-    min_workers = 4
-    max_workers = 16
-  }
-
-  workload_config = {
-    workload_type = "ETL"
-    configuration = {
-      "spark.databricks.cluster.profile" = "ETL"
-    }
-  }
-
-  spark_conf = {
-    "spark.databricks.adaptive.autoOptimizeShuffle.enabled" = "true"
-    "spark.databricks.photon.enabled"                       = "true"
-    "spark.databricks.io.cache.maxMetaDataCache"           = "10g"
-  }
-
-  azure_attributes = {
-    availability = "SPOT_AZURE"
-    spot_bid_max_price = -1
-  }
-
-  cluster_log_conf = {
-    destination = "dbfs:/cluster-logs/etl/"
-  }
-
-  init_scripts = [
-    {
-      destination = "dbfs:/databricks/scripts/etl-init.sh"
-    }
-  ]
-
-  custom_tags = {
-    environment = "production"
-    pipeline    = "daily_etl"
-    criticality = "high"
-  }
-}
+```
 ```
 
-## Cluster Types and Configurations
+## Common Cluster Configurations
 
 ### Development and Testing
-- Small, autoscaling clusters
-- Quick autotermination
-- Basic node types
-- Standard runtime versions
+- Small clusters with Standard_DS3_v2 instances
+- Autoscaling from 1-3 workers
+- 30-minute autotermination
+- Standard DBR versions
 
 ### Machine Learning
-- GPU-enabled instances
-- ML-optimized runtimes
-- Larger driver nodes
-- ML-specific libraries
+- GPU-enabled instances (Standard_NC-series)
+- ML-optimized runtimes with GPU support
+- Larger driver nodes (Standard_DS4_v2)
+- Common ML libraries pre-installed
 
 ### ETL/Data Processing
-- Cost-optimized with spot instances
-- High I/O optimized instances
+- Cost-optimized with Azure Spot instances
+- Memory-optimized instances (Standard_E-series)
 - Photon-enabled runtimes
-- Performance-tuned configurations
+- I/O and shuffle optimizations
 
 ### Interactive Analytics
+- Memory-optimized instances
+- Moderate autoscaling
+- Enhanced caching configurations
+- Interactive runtime versions
 - Fixed-size clusters
 - Memory-optimized instances
 - Fast startup configurations

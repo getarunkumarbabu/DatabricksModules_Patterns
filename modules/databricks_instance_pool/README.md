@@ -11,42 +11,7 @@ This module manages Databricks instance pools, which allow you to reduce cluster
 
 ## Usage
 
-### Basic AWS Example
-
-```hcl
-module "aws_instance_pool" {
-  source = "../modules/databricks_instance_pool"
-  
-  name                = "aws-analytics-pool"
-  max_capacity       = 20
-  min_idle_instances = 2
-  node_type_id       = "m5.2xlarge"
-  
-  idle_instance_autotermination_minutes = 30
-  enable_elastic_disk = true
-  
-  aws_attributes = {
-    availability            = "SPOT"
-    zone_id                = "us-west-2a"
-    spot_bid_price_percent = 100
-  }
-  
-  disk_spec = {
-    disk_type = {
-      ebs_volume_type = "GENERAL_PURPOSE_SSD"
-    }
-    disk_count = 1
-    disk_size  = 100
-  }
-  
-  custom_tags = {
-    Environment = "Production"
-    Team        = "Analytics"
-  }
-}
-```
-
-### Azure Example with Spot Instances
+### Basic Example with Spot Instances
 
 ```hcl
 module "azure_instance_pool" {
@@ -84,25 +49,14 @@ module "azure_instance_pool" {
 | name | Instance pool name | `string` | - | yes |
 | min_idle_instances | Minimum number of idle instances to maintain | `number` | `0` | no |
 | max_capacity | Maximum number of instances the pool can contain | `number` | - | yes |
-| node_type_id | Node type ID for instances (e.g., Standard_DS3_v2 for Azure, m5.large for AWS) | `string` | - | yes |
+| node_type_id | Node type ID for instances (e.g., Standard_DS3_v2, Standard_F4s_v2) | `string` | - | yes |
 | idle_instance_autotermination_minutes | Minutes after which idle instances are terminated | `number` | `60` | no |
 | enable_elastic_disk | Enable elastic disk optimization | `bool` | `true` | no |
 | preloaded_spark_versions | List of Spark versions to preload | `list(string)` | `null` | no |
 | custom_tags | Custom tags for instances | `map(string)` | `null` | no |
-| aws_attributes | AWS-specific attributes | See below | `null` | no |
 | azure_attributes | Azure-specific attributes | See below | `null` | no |
 | disk_spec | Disk specification | See below | `null` | no |
 | preloaded_docker_images | Docker images to preload | See below | `null` | no |
-
-### AWS Attributes
-
-```hcl
-object({
-  availability            = string  # SPOT or ON_DEMAND
-  zone_id                = optional(string)
-  spot_bid_price_percent = optional(number)
-})
-```
 
 ### Azure Attributes
 
@@ -118,7 +72,7 @@ object({
 ```hcl
 object({
   disk_type = object({
-    ebs_volume_type = optional(string)  # GENERAL_PURPOSE_SSD or THROUGHPUT_OPTIMIZED_HDD
+    azure_disk_volume_type = optional(string)  # STANDARD_LRS or PREMIUM_LRS
   })
   disk_count = number
   disk_size  = number
@@ -152,8 +106,7 @@ list(object({
 | idle_instance_autotermination_minutes | Instance idle timeout in minutes |
 | enable_elastic_disk | Elastic disk optimization status |
 | custom_tags | Applied custom tags |
-| aws_attributes | AWS-specific configuration |
-| azure_attributes | Azure-specific configuration |
+| azure_attributes | Azure instance configuration |
 | disk_spec | Disk configuration |
 | preloaded_docker_images | Configured docker images |
 | pool_info | Combined pool information including usage stats |
@@ -166,35 +119,36 @@ list(object({
    - Use auto-termination to manage costs
 
 2. **Cost Optimization**
-   - Use spot instances where possible
-   - Set appropriate bid prices/percentages
-   - Configure auto-termination for idle instances
-   - Enable elastic disk when variable storage is needed
+   - Use Azure Spot instances where possible
+   - Configure appropriate max spot price
+   - Set auto-termination for idle instances
+   - Enable elastic disk for storage flexibility
 
 3. **Performance**
    - Preload commonly used Spark versions
-   - Use instance types appropriate for workload
-   - Configure sufficient disk space
-   - Consider local SSDs for I/O-intensive workloads
+   - Choose appropriate Azure VM types
+   - Use Premium SSD for I/O-intensive workloads
+   - Configure adequate disk space
 
 4. **Availability**
-   - Use ON_DEMAND for critical workloads
-   - Consider multiple pools across zones
+   - Use ON_DEMAND_AZURE for critical workloads
+   - Consider multiple pools across Azure zones
    - Set appropriate spot bid limits
+   - Monitor spot instance evictions
 
 5. **Management**
    - Use meaningful names and tags
    - Document pool purposes
    - Monitor usage statistics
-   - Regularly review and adjust settings
+   - Review and adjust settings regularly
 
 ## Notes and Limitations
 
 1. Instance pools are workspace-specific
 2. Changes to pool settings may require recreation
-3. Some features are cloud-provider specific
-4. Spot instance availability varies by region/zone
-5. Docker image preloading may increase startup time
+3. Consider Azure region spot instance availability
+4. Azure Premium SSDs recommended for production
+5. Docker image preloading affects startup time
 
 ## Troubleshooting
 

@@ -9,7 +9,7 @@ module "metastore" {
   source = "./modules/databricks_metastore"
 
   name          = "my_metastore"
-  storage_root  = "s3://my-bucket/metastore"
+  storage_root  = "abfss://container@storageaccount.dfs.core.windows.net/metastore"
   region        = "us-west-2"
   owner         = "my-user@example.com"
   force_destroy = false
@@ -34,7 +34,7 @@ module "metastore" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | name | The name of the metastore | `string` | n/a | yes |
-| storage_root | The storage root URL for the metastore (e.g., s3://, abfss://, gs://) | `string` | n/a | yes |
+| storage_root | The storage root URL for the metastore (e.g., abfss://) | `string` | n/a | yes |
 | region | The region where the metastore should be created | `string` | n/a | yes |
 | owner | Username/group name/service principal application ID of the metastore owner | `string` | `null` | no |
 | force_destroy | Whether to force destroy the metastore even if it contains data | `bool` | `false` | no |

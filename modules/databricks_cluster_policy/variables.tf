@@ -30,9 +30,7 @@ variable "definition" {
     - custom_tags: Required or prohibited tags
     - spark_conf: Spark configuration restrictions
     - instance_pool_id: Instance pool requirements
-    - aws_attributes: AWS-specific constraints
     - azure_attributes: Azure-specific constraints
-    - gcp_attributes: GCP-specific constraints
 
     Each field can use these policy types:
     - fixed: Enforces a specific value
@@ -124,10 +122,10 @@ variable "libraries" {
 
   validation {
     condition = var.libraries == null || (
-      (var.libraries.jar == null || alltrue([for j in coalesce(var.libraries.jar, []) : can(regex("^(dbfs:|s3:|abfss:|gs:)/", j))])) &&
-      (var.libraries.egg == null || alltrue([for e in coalesce(var.libraries.egg, []) : can(regex("^(dbfs:|s3:|abfss:|gs:)/", e))])) &&
-      (var.libraries.whl == null || alltrue([for w in coalesce(var.libraries.whl, []) : can(regex("^(dbfs:|s3:|abfss:|gs:)/", w))]))
+      (var.libraries.jar == null || alltrue([for j in coalesce(var.libraries.jar, []) : can(regex("^(dbfs:|abfss:)/", j))])) &&
+      (var.libraries.egg == null || alltrue([for e in coalesce(var.libraries.egg, []) : can(regex("^(dbfs:|abfss:)/", e))])) &&
+      (var.libraries.whl == null || alltrue([for w in coalesce(var.libraries.whl, []) : can(regex("^(dbfs:|abfss:)/", w))]))
     )
-    error_message = "Library paths must start with a valid scheme (dbfs:, s3:, abfss:, gs:)."
+    error_message = "Library paths must start with a valid scheme (dbfs: or abfss:)."
   }
 }

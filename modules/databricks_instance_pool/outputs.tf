@@ -53,10 +53,7 @@ output "custom_tags" {
   value       = databricks_instance_pool.this.custom_tags
 }
 
-output "aws_attributes" {
-  description = "AWS-specific attributes of the instance pool"
-  value       = var.aws_attributes
-}
+
 
 output "azure_attributes" {
   description = "Azure-specific attributes of the instance pool"

@@ -54,7 +54,7 @@ module "external_table" {
   catalog_name     = "main"
   schema_name      = "external"
   table_type       = "EXTERNAL"
-  storage_location = "s3://my-bucket/path/to/table"
+  storage_location = "abfss://container@storageaccount.dfs.core.windows.net/path/to/table"
 
   columns = [
     {

@@ -4,7 +4,12 @@ This module manages Azure Data Lake Storage Gen2 (ADLS Gen2) mounts in Azure Dat
 
 ## Features
 
-- ADLS Gen2 integration using ABFS protocol
+- ADLS Gen2 integration u1.1. Azure storage configuration should be specified.
+2. The mount point will be accessible at `/mnt/<n>` in DBFS.
+3. Make sure Azure authentication is configured using a service principal or managed identity.
+4. Mount points are workspace-specific.unt point will be accessible at `/mnt/<n>` in DBFS.
+2. Make sure Azure authentication is configured using a service principal or managed identity.
+3. Mount points are workspace-specific.FS protocol
 - Support for both Service Principal and Managed Identity authentication
 - Secure credential management
 - Optional directory-level mounting
@@ -294,15 +299,6 @@ module "optimized_mount" {
 })
 ```
 
-### GCP Configuration
-
-```hcl
-object({
-  bucket_name     = string
-  service_account = string
-})
-```
-
 ## Outputs
 
 | Name | Description |
@@ -313,10 +309,8 @@ object({
 
 ## Notes
 
-1. Only one cloud provider configuration (s3_config, azure_config, or gcp_config) should be specified.
+1. Only one cloud provider configuration should be specified.
 2. The mount point will be accessible at `/mnt/<name>` in DBFS.
 3. Make sure the necessary authentication is configured:
-   - For AWS: Instance profile or IAM role
    - For Azure: Service principal or managed identity
-   - For GCP: Service account
 4. Mount points are workspace-specific.

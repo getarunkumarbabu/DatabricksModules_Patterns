@@ -41,30 +41,12 @@ variable "owner" {
   default     = null
 }
 
-variable "aws_s3_bucket" {
-  description = "AWS S3 bucket configuration"
-  type = object({
-    bucket_name = string
-    path        = string
-  })
-  default = null
-}
-
 variable "azure_storage_container" {
   description = "Azure Storage container configuration"
   type = object({
     container_name       = string
     storage_account_name = string
     path                = string
-  })
-  default = null
-}
-
-variable "gcp_storage_bucket" {
-  description = "GCP Storage bucket configuration"
-  type = object({
-    bucket_name = string
-    path        = string
   })
   default = null
 }

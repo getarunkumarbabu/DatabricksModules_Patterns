@@ -195,9 +195,7 @@ module "etl_cluster" {
 
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| aws_attributes | AWS configurations | `object` | `null` |
 | azure_attributes | Azure configurations | `object` | `null` |
-| gcp_attributes | GCP configurations | `object` | `null` |
 
 ## Output Details
 

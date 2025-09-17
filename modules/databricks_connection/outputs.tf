@@ -80,8 +80,8 @@ output "connection_url" {
       databricks_connection.this.options[0].port,
       databricks_connection.this.options[0].database
     ), null),
-    # Redshift
-    try(format("jdbc:redshift://%s:%s/%s",
+    # Azure SQL Database
+    try(format("jdbc:sqlserver://%s:%s;databaseName=%s",
       databricks_connection.this.options[0].host,
       databricks_connection.this.options[0].port,
       databricks_connection.this.options[0].database

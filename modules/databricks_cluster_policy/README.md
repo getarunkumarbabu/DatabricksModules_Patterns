@@ -7,7 +7,7 @@ This advanced module manages Databricks cluster policies, enabling organizations
 - Policy inheritance through policy families
 - Granular cluster configuration control
 - Built-in validation and security checks
-- Multi-cloud support (AWS, Azure, GCP)
+- Azure-specific optimizations
 - Automated library management
 - Cost control mechanisms
 

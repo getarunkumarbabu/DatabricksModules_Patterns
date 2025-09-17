@@ -9,14 +9,7 @@ resource "databricks_instance_pool" "this" {
   preloaded_spark_versions              = var.preloaded_spark_versions
   custom_tags                           = var.custom_tags
 
-  dynamic "aws_attributes" {
-    for_each = var.aws_attributes != null ? [var.aws_attributes] : []
-    content {
-      availability            = aws_attributes.value.availability
-      zone_id                = aws_attributes.value.zone_id
-      spot_bid_price_percent = aws_attributes.value.spot_bid_price_percent
-    }
-  }
+  # Azure-specific attributes are handled through node_type_id
 
   dynamic "azure_attributes" {
     for_each = var.azure_attributes != null ? [var.azure_attributes] : []
@@ -30,7 +23,7 @@ resource "databricks_instance_pool" "this" {
     for_each = var.disk_spec != null ? [var.disk_spec] : []
     content {
       disk_type {
-        ebs_volume_type = disk_spec.value.disk_type.ebs_volume_type
+        # Azure managed disk configuration is handled automatically
       }
       disk_count = disk_spec.value.disk_count
       disk_size  = disk_spec.value.disk_size

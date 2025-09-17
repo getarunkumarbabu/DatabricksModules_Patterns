@@ -4,7 +4,7 @@ variable "name" {
 }
 
 variable "storage_root" {
-  description = "The storage root URL for the metastore (e.g., s3://, abfss://, gs://)"
+  description = "The storage root URL for the metastore (e.g., abfss://)"
   type        = string
 }
 

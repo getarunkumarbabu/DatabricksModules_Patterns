@@ -142,7 +142,7 @@ az role assignment add --assignee "<service-principal-id>" --role "Storage Blob 
 | tags | Organization and governance tags | `map(string)` | `{}` | no |
 | owner | Catalog owner (user, group, or service principal) | `string` | `null` | no |
 | isolation_mode | Access control mode (OPEN or ISOLATED) | `string` | `"OPEN"` | no |
-| provider_name | Storage provider for external catalogs (azure, aws, gcp) | `string` | `null` | no |
+| provider_name | Storage provider for external catalogs (azure) | `string` | `null` | no |
 | storage_root | Storage root URL for external catalogs | `string` | `null` | no |
 
 ## Outputs

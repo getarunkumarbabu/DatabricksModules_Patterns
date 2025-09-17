@@ -2,7 +2,7 @@ variable "name" {
   description = <<-EOT
     Name of the connection. Must be unique within the workspace.
     Should be descriptive and indicate the purpose or source system.
-    Examples: "prod-mysql-analytics", "snowflake-finance", "redshift-customer-data"
+    Examples: "prod-mysql-analytics", "snowflake-finance", "azure-sql-customer-data"
   EOT
   type        = string
 
@@ -17,21 +17,17 @@ variable "connection_type" {
     Type of the connection. Supported types:
     - MYSQL: MySQL database
     - POSTGRESQL: PostgreSQL database
-    - SNOWFLAKE: Snowflake data warehouse
-    - REDSHIFT: Amazon Redshift
     - SQLSERVER: Microsoft SQL Server
     - SYNAPSE: Azure Synapse Analytics
-    - BIGQUERY: Google BigQuery
     Each type requires specific options to be configured.
   EOT
   type        = string
 
   validation {
     condition     = contains([
-      "MYSQL", "POSTGRESQL", "SNOWFLAKE", "REDSHIFT",
-      "SQLSERVER", "SYNAPSE", "BIGQUERY"
+      "MYSQL", "POSTGRESQL", "SQLSERVER", "SYNAPSE"
     ], var.connection_type)
-    error_message = "Invalid connection type. Must be one of: MYSQL, POSTGRESQL, SNOWFLAKE, REDSHIFT, SQLSERVER, SYNAPSE, BIGQUERY."
+    error_message = "Invalid connection type. Must be one of: MYSQL, POSTGRESQL, SQLSERVER, SYNAPSE."
   }
 }
 
@@ -87,22 +83,6 @@ variable "options" {
     - password: Password
     - encrypt: Enable SSL/TLS (recommended)
 
-    SNOWFLAKE:
-    - host: Account URL (e.g., org.snowflakecomputing.com)
-    - database: Database name
-    - warehouse: Warehouse name
-    - role: Role name
-    - user: Username
-    - password: Password
-
-    REDSHIFT:
-    - host: Cluster endpoint
-    - port: Port (default 5439)
-    - database: Database name
-    - user: Username
-    - password: Password
-    - ssl: Enable SSL (recommended)
-
     SQLSERVER:
     - host: Server name
     - port: Port (default 1433)
@@ -118,10 +98,6 @@ variable "options" {
     - user: Username
     - password: Password
     - authentication: SQL or Active Directory
-
-    BIGQUERY:
-    - project_id: GCP project ID
-    - authentication: Service account key
   EOT
   type = object({
     host                     = optional(string)

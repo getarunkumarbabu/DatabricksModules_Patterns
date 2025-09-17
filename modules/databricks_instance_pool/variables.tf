@@ -15,7 +15,7 @@ variable "max_capacity" {
 }
 
 variable "node_type_id" {
-  description = "The node type ID for the instances in the pool (e.g., Standard_DS3_v2 for Azure, m4.large for AWS)"
+  description = "The node type ID for the instances in the pool (e.g., Standard_DS3_v2, Standard_F4s_v2)"
   type        = string
 }
 
@@ -43,20 +43,7 @@ variable "custom_tags" {
   default     = null
 }
 
-variable "aws_attributes" {
-  description = "AWS-specific attributes for the instance pool"
-  type = object({
-    availability            = string  # SPOT or ON_DEMAND
-    zone_id                = optional(string)
-    spot_bid_price_percent = optional(number)
-  })
-  default = null
 
-  validation {
-    condition     = var.aws_attributes == null || contains(["SPOT", "ON_DEMAND"], var.aws_attributes.availability)
-    error_message = "AWS availability must be either SPOT or ON_DEMAND."
-  }
-}
 
 variable "azure_attributes" {
   description = "Azure-specific attributes for the instance pool"
@@ -75,18 +62,10 @@ variable "azure_attributes" {
 variable "disk_spec" {
   description = "Disk specification for the instances in the pool"
   type = object({
-    disk_type = object({
-      ebs_volume_type = optional(string)  # For AWS: GENERAL_PURPOSE_SSD, THROUGHPUT_OPTIMIZED_HDD
-    })
     disk_count = number
     disk_size  = number
   })
   default = null
-
-  validation {
-    condition     = var.disk_spec == null || try(contains(["GENERAL_PURPOSE_SSD", "THROUGHPUT_OPTIMIZED_HDD"], var.disk_spec.disk_type.ebs_volume_type), true)
-    error_message = "AWS EBS volume type must be either GENERAL_PURPOSE_SSD or THROUGHPUT_OPTIMIZED_HDD."
-  }
 }
 
 variable "preloaded_docker_images" {

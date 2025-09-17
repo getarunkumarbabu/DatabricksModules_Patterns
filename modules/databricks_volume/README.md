@@ -16,21 +16,6 @@ module "managed_volume" {
   comment      = "My managed volume"
 }
 
-# Example of an external volume with AWS S3
-module "external_s3_volume" {
-  source = "./modules/databricks_volume"
-
-  name         = "s3_volume"
-  catalog_name = "main"
-  schema_name  = "external"
-  volume_type  = "EXTERNAL"
-
-  aws_s3_bucket = {
-    bucket_name = "my-bucket"
-    path        = "/path/to/volume"
-  }
-}
-
 # Example of an external volume with Azure Storage
 module "external_azure_volume" {
   source = "./modules/databricks_volume"
@@ -44,21 +29,6 @@ module "external_azure_volume" {
     container_name       = "my-container"
     storage_account_name = "mystorageaccount"
     path                = "/path/to/volume"
-  }
-}
-
-# Example of an external volume with GCP Storage
-module "external_gcp_volume" {
-  source = "./modules/databricks_volume"
-
-  name         = "gcp_volume"
-  catalog_name = "main"
-  schema_name  = "external"
-  volume_type  = "EXTERNAL"
-
-  gcp_storage_bucket = {
-    bucket_name = "my-bucket"
-    path        = "/path/to/volume"
   }
 }
 ```
@@ -81,9 +51,7 @@ module "external_gcp_volume" {
 | storage_location | Storage location for the volume | string | null | no |
 | comment | Comment describing the volume | string | null | no |
 | owner | Owner of the volume | string | null | no |
-| aws_s3_bucket | AWS S3 bucket configuration | object | null | no |
 | azure_storage_container | Azure Storage container configuration | object | null | no |
-| gcp_storage_bucket | GCP Storage bucket configuration | object | null | no |
 
 ## Outputs
 

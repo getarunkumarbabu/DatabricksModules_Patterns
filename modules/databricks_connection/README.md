@@ -1,16 +1,17 @@
-# Databricks Connection Module
+# Azure Databricks Connection Module
 
-This advanced module manages secure connections between Databricks and external data sources, supporting a wide range of database systems, data warehouses, and cloud services. It provides comprehensive configuration options, security features, and monitoring capabilities.
+This module manages secure connections between Azure Databricks and external data sources, with a focus on Azure-native and common database systems. It provides comprehensive configuration options, security features, and monitoring capabilities integrated with Azure services.
 
 ## Features
 
-- Multi-source connectivity
-- Security-first configuration
-- Comprehensive monitoring
-- Credential management
-- Access control integration
-- Connection pooling
-- SSL/TLS support
+- Azure Synapse Analytics integration
+- SQL Server connectivity
+- MySQL/PostgreSQL support
+- Azure Active Directory integration
+- Azure Key Vault credential management
+- Azure Monitor integration
+- Azure Private Link support
+- SSL/TLS security
 
 ## Requirements
 
@@ -53,36 +54,6 @@ module "mysql_prod" {
 }
 ```
 
-### Snowflake Data Warehouse
-
-```hcl
-module "snowflake_finance" {
-  source = "./modules/databricks_connection"
-
-  name            = "snowflake-finance-dw"
-  connection_type = "SNOWFLAKE"
-  comment         = "Finance data warehouse connection"
-  
-  options = {
-    host      = "company.snowflakecomputing.com"
-    database  = "FINANCE_DW"
-    warehouse = "FINANCE_WH"
-    role      = "FINANCE_ANALYST"
-    user      = "snowflake_svc"
-    password  = var.snowflake_password
-  }
-  
-  properties = {
-    environment        = "production"
-    business_unit     = "finance"
-    data_domain       = "financial_reporting"
-    refresh_schedule  = "daily"
-    support_hours     = "24x7"
-    compliance        = "sox"
-  }
-}
-```
-
 ### Azure Synapse Analytics
 
 ```hcl
@@ -108,35 +79,6 @@ module "synapse_customer" {
     gdpr_compliant  = "true"
     retention_days  = "365"
     owner_team      = "customer_insights"
-  }
-}
-```
-
-### BigQuery Analytics
-
-```hcl
-module "bigquery_analytics" {
-  source = "./modules/databricks_connection"
-
-  name            = "bigquery-analytics"
-  connection_type = "BIGQUERY"
-  comment         = "Google Analytics data in BigQuery"
-  
-  options = {
-    authentication = jsonencode({
-      type = "service_account"
-      project_id = "analytics-project"
-      private_key_id = var.bq_key_id
-      private_key = var.bq_private_key
-      client_email = "analytics-sa@project.iam.gserviceaccount.com"
-    })
-  }
-  
-  properties = {
-    project         = "analytics-project"
-    dataset         = "analytics_data"
-    refresh_window  = "24h"
-    owner_team      = "marketing_analytics"
   }
 }
 ```
@@ -167,17 +109,7 @@ options = {
 }
 ```
 
-### Snowflake
-```hcl
-options = {
-  host      = "account.snowflakecomputing.com"
-  database  = "database"
-  warehouse = "warehouse"
-  role      = "role_name"
-  user      = "username"
-  password  = "password"
-}
-```
+
 
 ## Security Considerations
 

@@ -26,19 +26,19 @@ output "connection_type" {
 output "connection_info" {
   description = "Summary of the connection configuration, excluding sensitive data."
   value = {
-    id            = databricks_connection.this.id
-    name          = databricks_connection.this.name
-    type          = databricks_connection.this.connection_type
-    owner         = databricks_connection.this.owner
-    metastore_id  = databricks_connection.this.metastore_id
-    properties    = databricks_connection.this.properties
+    id           = databricks_connection.this.id
+    name         = databricks_connection.this.name
+    type         = databricks_connection.this.connection_type
+    owner        = databricks_connection.this.owner
+    metastore_id = databricks_connection.this.metastore_id
+    properties   = databricks_connection.this.properties
     options = {
-      host       = try(databricks_connection.this.options[0].host, null)
-      port       = try(databricks_connection.this.options[0].port, null)
-      database   = try(databricks_connection.this.options[0].database, null)
-      encrypt    = try(databricks_connection.this.options[0].encrypt, null)
-      role       = try(databricks_connection.this.options[0].role, null)
-      warehouse  = try(databricks_connection.this.options[0].warehouse, null)
+      host      = try(databricks_connection.this.options[0].host, null)
+      port      = try(databricks_connection.this.options[0].port, null)
+      database  = try(databricks_connection.this.options[0].database, null)
+      encrypt   = try(databricks_connection.this.options[0].encrypt, null)
+      role      = try(databricks_connection.this.options[0].role, null)
+      warehouse = try(databricks_connection.this.options[0].warehouse, null)
     }
   }
 }
@@ -46,16 +46,16 @@ output "connection_info" {
 output "created_by" {
   description = "Information about when and by whom the connection was created."
   value = {
-    creator    = databricks_connection.this.created_by
-    timestamp  = databricks_connection.this.created_at
+    creator   = databricks_connection.this.created_by
+    timestamp = databricks_connection.this.created_at
   }
 }
 
 output "last_modified" {
   description = "Information about the last modification to the connection."
   value = {
-    modifier   = databricks_connection.this.updated_by
-    timestamp  = databricks_connection.this.updated_at
+    modifier  = databricks_connection.this.updated_by
+    timestamp = databricks_connection.this.updated_at
   }
 }
 

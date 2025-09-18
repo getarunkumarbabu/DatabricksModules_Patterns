@@ -1,7 +1,7 @@
 variable "cluster_name" {
   description = "Name of the Databricks cluster. Must be unique within the workspace. May only contain alphanumeric characters, dashes, underscores, periods, and spaces."
   type        = string
-  
+
   validation {
     condition     = can(regex("^[a-zA-Z0-9-_. ]+$", var.cluster_name))
     error_message = "The cluster name can only contain alphanumeric characters, dashes, underscores, periods, and spaces."
@@ -71,10 +71,10 @@ variable "autoscale_config" {
   default = null
 
   validation {
-    condition     = var.autoscale_config == null || (
-                    var.autoscale_config.min_workers > 0 && 
-                    var.autoscale_config.max_workers >= var.autoscale_config.min_workers
-                   )
+    condition = var.autoscale_config == null || (
+      var.autoscale_config.min_workers > 0 &&
+      var.autoscale_config.max_workers >= var.autoscale_config.min_workers
+    )
     error_message = "min_workers must be > 0 and max_workers must be >= min_workers."
   }
 }
@@ -123,7 +123,7 @@ variable "custom_tags" {
 variable "workload_config" {
   description = "Workload-specific configurations for specialized compute needs."
   type = object({
-    workload_type = string       # e.g., "ML", "ETL", "REPORTING"
+    workload_type = string # e.g., "ML", "ETL", "REPORTING"
     configuration = map(string)
   })
   default = null
@@ -142,7 +142,7 @@ variable "init_scripts" {
   default = null
 
   validation {
-    condition     = var.init_scripts == null || alltrue([
+    condition = var.init_scripts == null || alltrue([
       for script in var.init_scripts : can(regex("^dbfs:/.*", script.destination))
     ])
     error_message = "Init script destinations must start with 'dbfs:/'."
@@ -158,7 +158,7 @@ variable "libraries" {
   default = null
 
   validation {
-    condition     = var.libraries == null || alltrue([
+    condition = var.libraries == null || alltrue([
       for lib in var.libraries : (lib.jar != null || lib.whl != null)
     ])
     error_message = "At least one library type (jar or whl) must be specified for each library entry."
@@ -168,7 +168,7 @@ variable "libraries" {
 variable "cluster_log_conf" {
   description = "Cluster log delivery configuration for file destinations."
   type = object({
-    destination = string  # DBFS destination path starting with dbfs:/
+    destination = string # DBFS destination path starting with dbfs:/
   })
   default = null
 
@@ -181,33 +181,33 @@ variable "cluster_log_conf" {
 variable "azure_attributes" {
   description = "Azure-specific attributes for cluster instances."
   type = object({
-    availability       = optional(string)      # ON_DEMAND_AZURE or SPOT_AZURE
-    first_on_demand   = optional(number)      # Number of initial nodes to run as on-demand
-    spot_bid_max_price = optional(number)     # Maximum price for spot instances (percentage of on-demand)
+    availability       = optional(string) # ON_DEMAND_AZURE or SPOT_AZURE
+    first_on_demand    = optional(number) # Number of initial nodes to run as on-demand
+    spot_bid_max_price = optional(number) # Maximum price for spot instances (percentage of on-demand)
   })
   default = null
 
   validation {
-    condition     = var.azure_attributes == null || (
-                    var.azure_attributes.availability == null || 
-                    contains(["ON_DEMAND_AZURE", "SPOT_AZURE"], var.azure_attributes.availability)
-                   )
+    condition = var.azure_attributes == null || (
+      var.azure_attributes.availability == null ||
+      contains(["ON_DEMAND_AZURE", "SPOT_AZURE"], var.azure_attributes.availability)
+    )
     error_message = "Azure availability must be one of: ON_DEMAND_AZURE, SPOT_AZURE."
   }
 
   validation {
-    condition     = var.azure_attributes == null || (
-                    var.azure_attributes.spot_bid_max_price == null || 
-                    var.azure_attributes.spot_bid_max_price >= 0
-                   )
+    condition = var.azure_attributes == null || (
+      var.azure_attributes.spot_bid_max_price == null ||
+      var.azure_attributes.spot_bid_max_price >= 0
+    )
     error_message = "Spot bid max price must be >= 0 (percentage of on-demand price)."
   }
 
   validation {
-    condition     = var.azure_attributes == null || (
-                    var.azure_attributes.first_on_demand == null || 
-                    var.azure_attributes.first_on_demand >= 0
-                   )
+    condition = var.azure_attributes == null || (
+      var.azure_attributes.first_on_demand == null ||
+      var.azure_attributes.first_on_demand >= 0
+    )
     error_message = "First on-demand nodes must be >= 0."
   }
 }

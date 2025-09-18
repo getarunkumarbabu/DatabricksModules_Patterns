@@ -13,7 +13,7 @@ variable "status" {
   description = "Status of the webhook (ACTIVE or DISABLED)"
   type        = string
   default     = "ACTIVE"
-  
+
   validation {
     condition     = contains(["ACTIVE", "DISABLED"], var.status)
     error_message = "Status must be either ACTIVE or DISABLED."
@@ -41,8 +41,8 @@ variable "authorization" {
 variable "job_spec" {
   description = "Configuration for triggering a Databricks job"
   type = object({
-    job_id    = string
-    workspace = optional(string)
+    job_id       = string
+    workspace    = optional(string)
     access_token = optional(string)
   })
   default = null
@@ -51,7 +51,7 @@ variable "job_spec" {
 variable "http_url_spec" {
   description = "Configuration for HTTP webhook endpoint"
   type = object({
-    url          = string
+    url                     = string
     enable_ssl_verification = optional(bool, true)
     authorization_header    = optional(string)
   })

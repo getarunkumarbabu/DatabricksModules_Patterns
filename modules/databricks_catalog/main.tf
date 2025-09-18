@@ -1,11 +1,11 @@
 resource "databricks_catalog" "this" {
-  name            = var.name
-  comment         = var.comment
-  properties      = merge(var.properties, var.tags)
-  owner           = var.owner
-  isolation_mode  = var.isolation_mode
-  provider_name   = var.provider_name
-  storage_root    = var.storage_root
+  name           = var.name
+  comment        = var.comment
+  properties     = merge(var.properties, var.tags)
+  owner          = var.owner
+  isolation_mode = var.isolation_mode
+  provider_name  = var.provider_name
+  storage_root   = var.storage_root
 
   lifecycle {
     precondition {

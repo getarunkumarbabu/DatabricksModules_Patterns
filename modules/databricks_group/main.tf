@@ -5,6 +5,6 @@ resource "databricks_group" "this" {
 resource "databricks_group_member" "members" {
   for_each = var.members == null ? [] : var.members
 
-  group_id = databricks_group.this.id
+  group_id  = databricks_group.this.id
   member_id = each.value
 }

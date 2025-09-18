@@ -1,5 +1,5 @@
 resource "databricks_secret_scope" "this" {
-  name = var.name
+  name                     = var.name
   initial_manage_principal = var.initial_manage_principal
 }
 

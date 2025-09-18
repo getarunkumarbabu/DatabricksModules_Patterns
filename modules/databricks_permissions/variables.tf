@@ -33,8 +33,8 @@ variable "access_controls" {
   type = list(object({
     group_name             = optional(string)
     service_principal_name = optional(string)
-    user_name             = optional(string)
-    permission_level      = string
+    user_name              = optional(string)
+    permission_level       = string
   }))
   default = []
 

@@ -24,9 +24,9 @@ output "policy_family" {
     Will be null if no policy family was used.
   EOT
   value = var.policy_family_id != null ? {
-    id            = var.policy_family_id
-    overrides     = var.policy_family_overrides
-    original_def  = try(data.databricks_cluster_policy.family[0].definition, null)
+    id           = var.policy_family_id
+    overrides    = var.policy_family_overrides
+    original_def = try(data.databricks_cluster_policy.family[0].definition, null)
   } : null
 }
 
@@ -52,15 +52,15 @@ output "libraries" {
 output "policy_summary" {
   description = "High-level summary of key policy settings and restrictions."
   value = {
-    name                = databricks_cluster_policy.this.name
-    id                  = databricks_cluster_policy.this.id
-    description         = databricks_cluster_policy.this.description
-    uses_family        = var.policy_family_id != null
-    family_id          = var.policy_family_id
-    max_clusters       = databricks_cluster_policy.this.max_clusters_per_user
-    has_libraries      = var.libraries != null
-    creation_time      = databricks_cluster_policy.this.created_at
-    last_updated_time  = databricks_cluster_policy.this.updated_at
+    name              = databricks_cluster_policy.this.name
+    id                = databricks_cluster_policy.this.id
+    description       = databricks_cluster_policy.this.description
+    uses_family       = var.policy_family_id != null
+    family_id         = var.policy_family_id
+    max_clusters      = databricks_cluster_policy.this.max_clusters_per_user
+    has_libraries     = var.libraries != null
+    creation_time     = databricks_cluster_policy.this.created_at
+    last_updated_time = databricks_cluster_policy.this.updated_at
   }
 }
 
@@ -72,26 +72,26 @@ output "applied_restrictions" {
   value = {
     fixed_values = {
       for k, v in jsondecode(
-        try(tostring(databricks_cluster_policy.this.definition), 
-            jsonencode(databricks_cluster_policy.this.definition))
+        try(tostring(databricks_cluster_policy.this.definition),
+        jsonencode(databricks_cluster_policy.this.definition))
       ) : k => v if try(v.type, "") == "fixed"
     }
     allowed_values = {
       for k, v in jsondecode(
         try(tostring(databricks_cluster_policy.this.definition),
-            jsonencode(databricks_cluster_policy.this.definition))
+        jsonencode(databricks_cluster_policy.this.definition))
       ) : k => v if try(v.type, "") == "allowlist"
     }
     denied_values = {
       for k, v in jsondecode(
         try(tostring(databricks_cluster_policy.this.definition),
-            jsonencode(databricks_cluster_policy.this.definition))
+        jsonencode(databricks_cluster_policy.this.definition))
       ) : k => v if try(v.type, "") == "denylist"
     }
     ranges = {
       for k, v in jsondecode(
         try(tostring(databricks_cluster_policy.this.definition),
-            jsonencode(databricks_cluster_policy.this.definition))
+        jsonencode(databricks_cluster_policy.this.definition))
       ) : k => v if try(v.type, "") == "range"
     }
   }

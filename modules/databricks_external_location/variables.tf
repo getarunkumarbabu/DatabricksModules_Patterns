@@ -1,7 +1,7 @@
 variable "name" {
   description = "The name of the external location in Unity Catalog. Must be unique within the metastore."
   type        = string
-  
+
   validation {
     condition     = can(regex("^[a-zA-Z0-9_]+$", var.name))
     error_message = "External location name can only contain alphanumeric characters and underscores."
@@ -21,7 +21,7 @@ variable "url" {
 variable "credential_name" {
   description = "The name of the Azure storage credential to use. Must be created using the databricks_storage_credential resource."
   type        = string
-  
+
   validation {
     condition     = can(regex("^[a-zA-Z0-9_]+$", var.credential_name))
     error_message = "Credential name can only contain alphanumeric characters and underscores."

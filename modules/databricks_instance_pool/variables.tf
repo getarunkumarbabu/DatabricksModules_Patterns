@@ -48,7 +48,7 @@ variable "custom_tags" {
 variable "azure_attributes" {
   description = "Azure-specific attributes for the instance pool"
   type = object({
-    availability        = string  # SPOT_AZURE or ON_DEMAND_AZURE
+    availability       = string # SPOT_AZURE or ON_DEMAND_AZURE
     spot_bid_max_price = optional(number)
   })
   default = null

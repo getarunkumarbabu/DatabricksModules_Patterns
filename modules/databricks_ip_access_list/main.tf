@@ -7,7 +7,7 @@ resource "databricks_ip_access_list" "this" {
   lifecycle {
     precondition {
       condition = alltrue([
-        for ip in var.ip_addresses : 
+        for ip in var.ip_addresses :
         can(regex("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?:/[0-9]{1,2})?$", ip)) ||
         can(regex("^(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}(?:/[0-9]{1,3})?$", ip))
       ])

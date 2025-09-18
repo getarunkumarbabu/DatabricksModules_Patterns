@@ -7,7 +7,7 @@ resource "databricks_user" "this" {
 # Grant workspace access if enabled
 resource "databricks_workspace_access" "this" {
   count = var.workspace_access ? 1 : 0
-  user = databricks_user.this.id
+  user  = databricks_user.this.id
 }
 
 # Assign roles to the user

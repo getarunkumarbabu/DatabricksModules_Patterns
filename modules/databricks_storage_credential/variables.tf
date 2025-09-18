@@ -23,7 +23,7 @@ variable "azure_managed_identity" {
   default = null
 
   validation {
-    condition = var.azure_managed_identity == null || can(regex("^/subscriptions/[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}/resourceGroups/[^/]+/providers/Microsoft.Databricks/accessConnectors/[^/]+$", var.azure_managed_identity.access_connector_id))
+    condition     = var.azure_managed_identity == null || can(regex("^/subscriptions/[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}/resourceGroups/[^/]+/providers/Microsoft.Databricks/accessConnectors/[^/]+$", var.azure_managed_identity.access_connector_id))
     error_message = "The access_connector_id must be a valid Azure resource ID for a Databricks access connector."
   }
 }

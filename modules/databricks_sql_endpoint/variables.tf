@@ -13,7 +13,7 @@ variable "cluster_size" {
   type        = string
 
   validation {
-    condition     = contains([
+    condition = contains([
       "2X-Small", "X-Small", "Small", "Medium", "Large",
       "X-Large", "2X-Large", "3X-Large", "4X-Large"
     ], var.cluster_size)

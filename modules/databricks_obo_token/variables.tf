@@ -12,7 +12,7 @@ variable "comment" {
 variable "lifetime_seconds" {
   description = "The lifetime of the token in seconds"
   type        = number
-  default     = 3600  # 1 hour
+  default     = 3600 # 1 hour
 
   validation {
     condition     = var.lifetime_seconds > 0 && var.lifetime_seconds <= 864000

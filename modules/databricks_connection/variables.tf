@@ -24,7 +24,7 @@ variable "connection_type" {
   type        = string
 
   validation {
-    condition     = contains([
+    condition = contains([
       "MYSQL", "POSTGRESQL", "SQLSERVER", "SYNAPSE"
     ], var.connection_type)
     error_message = "Invalid connection type. Must be one of: MYSQL, POSTGRESQL, SQLSERVER, SYNAPSE."
@@ -109,7 +109,7 @@ variable "options" {
     trust_server_certificate = optional(bool)
     authentication           = optional(string)
     role                     = optional(string)
-    warehouse               = optional(string)
+    warehouse                = optional(string)
   })
   default   = null
   sensitive = true

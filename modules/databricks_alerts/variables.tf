@@ -40,10 +40,10 @@ variable "options" {
 variable "alert_conditions" {
   description = "List of alert conditions that must be met to trigger the alert. At least one condition is required."
   type = list(object({
-    column           = string       # The column name from the query result to monitor
-    operator         = string       # Comparison operator: >, <, =, !=, >=, <=
-    value            = string       # The threshold value to compare against
-    data_type        = string       # One of: number, string, datetime, boolean
+    column           = string           # The column name from the query result to monitor
+    operator         = string           # Comparison operator: >, <, =, !=, >=, <=
+    value            = string           # The threshold value to compare against
+    data_type        = string           # One of: number, string, datetime, boolean
     custom_data_type = optional(string) # Custom data type for special cases
   }))
 
@@ -74,18 +74,18 @@ variable "notification_settings" {
     custom_body    = optional(string)       # Custom notification message
     emails         = optional(list(string)) # List of email addresses to notify
     xmatters       = optional(bool)         # Enable xMatters notifications
-    slack          = optional(object({      # Slack notification settings
+    slack = optional(object({               # Slack notification settings
       channels     = optional(list(string)) # Slack channels to notify
       workspace_id = optional(string)       # Slack workspace ID
     }))
-    teams          = optional(object({      # Microsoft Teams settings
-      webhook_url  = optional(string)       # Teams webhook URL
-      channel      = optional(string)       # Teams channel name
+    teams = optional(object({        # Microsoft Teams settings
+      webhook_url = optional(string) # Teams webhook URL
+      channel     = optional(string) # Teams channel name
     }))
-    webhook        = optional(object({      # Custom webhook settings
-      url          = string                 # Webhook URL
-      headers      = optional(map(string))  # Custom headers
-      template     = optional(string)       # Message template
+    webhook = optional(object({        # Custom webhook settings
+      url      = string                # Webhook URL
+      headers  = optional(map(string)) # Custom headers
+      template = optional(string)      # Message template
     }))
   })
   default = null

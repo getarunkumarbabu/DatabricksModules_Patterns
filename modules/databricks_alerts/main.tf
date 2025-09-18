@@ -20,10 +20,10 @@ locals {
 }
 
 resource "databricks_sql_alert" "this" {
-  name      = var.alert_name
-  query_id  = var.query_id
-  rearm     = var.rearm
-  parent    = var.parent
+  name     = var.alert_name
+  query_id = var.query_id
+  rearm    = var.rearm
+  parent   = var.parent
 
   dynamic "options" {
     for_each = var.options
@@ -40,8 +40,8 @@ resource "databricks_sql_alert" "this" {
     content {
       column           = alert_condition.value.column
       operator         = alert_condition.value.operator
-      value           = alert_condition.value.value
-      data_type       = alert_condition.value.data_type
+      value            = alert_condition.value.value
+      data_type        = alert_condition.value.data_type
       custom_data_type = try(alert_condition.value.custom_data_type, null)
     }
   }
@@ -52,9 +52,9 @@ resource "databricks_sql_alert" "this" {
     content {
       custom_subject = try(notification_settings.value.custom_subject, null)
       custom_body    = try(notification_settings.value.custom_body, null)
-      emails        = try(notification_settings.value.emails, null)
-      xmatters      = try(notification_settings.value.xmatters, false)
-      
+      emails         = try(notification_settings.value.emails, null)
+      xmatters       = try(notification_settings.value.xmatters, false)
+
       # Slack configuration
       dynamic "slack" {
         for_each = local.slack_config != null ? [local.slack_config] : []
@@ -63,7 +63,7 @@ resource "databricks_sql_alert" "this" {
           workspace_id = slack.value.workspace_id
         }
       }
-      
+
       # Microsoft Teams configuration
       dynamic "teams" {
         for_each = local.teams_config != null ? [local.teams_config] : []
@@ -72,7 +72,7 @@ resource "databricks_sql_alert" "this" {
           channel     = teams.value.channel
         }
       }
-      
+
       # Webhook configuration
       dynamic "webhook" {
         for_each = local.webhook_config != null ? [local.webhook_config] : []
@@ -88,7 +88,7 @@ resource "databricks_sql_alert" "this" {
   # Lifecycle management for associated resources
   lifecycle {
     ignore_changes = [
-      parent  # Ignore parent changes for dashboard/folder moves
+      parent # Ignore parent changes for dashboard/folder moves
     ]
   }
 }

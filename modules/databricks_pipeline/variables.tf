@@ -85,7 +85,7 @@ variable "notifications" {
   description = "Pipeline notifications configuration"
   type = object({
     email_recipients = list(string)
-    alerts_enabled  = bool
+    alerts_enabled   = bool
   })
   default = null
 

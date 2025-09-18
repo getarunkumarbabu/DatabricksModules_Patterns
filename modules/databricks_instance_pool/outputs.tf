@@ -74,12 +74,12 @@ output "preloaded_docker_images" {
 output "pool_info" {
   description = "Combined pool information for easy reference"
   value = {
-    id                = databricks_instance_pool.this.id
-    name              = databricks_instance_pool.this.instance_pool_name
-    state             = databricks_instance_pool.this.state
-    node_type         = databricks_instance_pool.this.node_type_id
-    current_capacity  = try(databricks_instance_pool.this.stats.used_count, 0)
-    idle_count        = try(databricks_instance_pool.this.stats.idle_count, 0)
-    pending_count     = try(databricks_instance_pool.this.stats.pending_count, 0)
+    id               = databricks_instance_pool.this.id
+    name             = databricks_instance_pool.this.instance_pool_name
+    state            = databricks_instance_pool.this.state
+    node_type        = databricks_instance_pool.this.node_type_id
+    current_capacity = try(databricks_instance_pool.this.stats.used_count, 0)
+    idle_count       = try(databricks_instance_pool.this.stats.idle_count, 0)
+    pending_count    = try(databricks_instance_pool.this.stats.pending_count, 0)
   }
 }

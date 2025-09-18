@@ -1,8 +1,8 @@
 
 resource "databricks_instance_pool" "this" {
-  instance_pool_name                     = var.name
-  min_idle_instances                     = var.min_idle_instances
-  max_capacity                           = var.max_capacity
+  instance_pool_name                    = var.name
+  min_idle_instances                    = var.min_idle_instances
+  max_capacity                          = var.max_capacity
   node_type_id                          = var.node_type_id
   idle_instance_autotermination_minutes = var.idle_instance_autotermination_minutes
   enable_elastic_disk                   = var.enable_elastic_disk
@@ -14,7 +14,7 @@ resource "databricks_instance_pool" "this" {
   dynamic "azure_attributes" {
     for_each = var.azure_attributes != null ? [var.azure_attributes] : []
     content {
-      availability        = azure_attributes.value.availability
+      availability       = azure_attributes.value.availability
       spot_bid_max_price = azure_attributes.value.spot_bid_max_price
     }
   }

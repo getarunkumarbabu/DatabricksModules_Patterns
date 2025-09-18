@@ -4,9 +4,9 @@ resource "databricks_mws_workspaces" "this" {
   deployment_name = var.deployment_name
   location        = var.location
 
-  network_id              = var.network_id
+  network_id               = var.network_id
   storage_configuration_id = var.storage_configuration_id
-  credentials_id          = var.credentials_id
+  credentials_id           = var.credentials_id
 
   pricing_tier = var.pricing_tier
 

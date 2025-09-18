@@ -5,7 +5,7 @@ resource "databricks_library" "this" {
     for_each = var.maven_coordinates != null ? [1] : []
     content {
       coordinates = var.maven_coordinates
-      repo       = var.maven_repo
+      repo        = var.maven_repo
     }
   }
 

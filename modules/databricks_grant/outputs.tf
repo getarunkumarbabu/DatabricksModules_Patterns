@@ -10,7 +10,7 @@ output "privileges" {
 
 output "object_type" {
   description = "The type of object that privileges were granted on"
-  value       = coalesce(
+  value = coalesce(
     var.catalog_name != null ? "CATALOG" : null,
     var.schema_name != null ? "SCHEMA" : null,
     var.table_name != null ? "TABLE" : null,
@@ -20,7 +20,7 @@ output "object_type" {
 
 output "object_name" {
   description = "The full name of the object that privileges were granted on"
-  value       = coalesce(
+  value = coalesce(
     var.catalog_name != null ? var.catalog_name : null,
     var.schema_name != null ? "${var.schema_catalog_name}.${var.schema_name}" : null,
     var.table_name != null ? "${var.table_catalog_name}.${var.table_schema_name}.${var.table_name}" : null,

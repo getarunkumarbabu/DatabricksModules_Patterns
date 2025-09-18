@@ -22,7 +22,7 @@ variable "ip_addresses" {
   type        = list(string)
 
   validation {
-    condition = length(var.ip_addresses) > 0
+    condition     = length(var.ip_addresses) > 0
     error_message = "At least one IP address/CIDR range must be provided."
   }
 }

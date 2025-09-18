@@ -30,12 +30,12 @@ output "parent" {
 
 output "alert_conditions" {
   description = "The configured alert conditions"
-  value       = [
+  value = [
     for condition in databricks_sql_alert.this.alert_condition : {
       column           = condition.column
       operator         = condition.operator
-      value           = condition.value
-      data_type       = condition.data_type
+      value            = condition.value
+      data_type        = condition.data_type
       custom_data_type = condition.custom_data_type
     }
   ]
@@ -46,11 +46,11 @@ output "notification_settings" {
   value = var.notification_settings != null ? {
     custom_subject = try(databricks_sql_alert.this.notification_settings[0].custom_subject, null)
     custom_body    = try(databricks_sql_alert.this.notification_settings[0].custom_body, null)
-    emails        = try(databricks_sql_alert.this.notification_settings[0].emails, null)
-    xmatters      = try(databricks_sql_alert.this.notification_settings[0].xmatters, null)
-    slack         = local.slack_config
-    teams         = local.teams_config
-    webhook       = local.webhook_config
+    emails         = try(databricks_sql_alert.this.notification_settings[0].emails, null)
+    xmatters       = try(databricks_sql_alert.this.notification_settings[0].xmatters, null)
+    slack          = local.slack_config
+    teams          = local.teams_config
+    webhook        = local.webhook_config
   } : null
   sensitive = true # Because it might contain sensitive information like webhook URLs and credentials
 }

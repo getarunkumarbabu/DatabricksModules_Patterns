@@ -46,7 +46,7 @@ variable "azure_storage_container" {
   type = object({
     container_name       = string
     storage_account_name = string
-    path                = string
+    path                 = string
   })
   default = null
 }

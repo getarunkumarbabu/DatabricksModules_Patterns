@@ -42,7 +42,7 @@ variable "definition" {
   type        = any
 
   validation {
-    condition     = try(
+    condition = try(
       jsondecode(
         try(tostring(var.definition), jsonencode(var.definition))
       ),
@@ -107,14 +107,14 @@ variable "libraries" {
     Note: Ensure all specified libraries are compatible with the policy's allowed Spark versions.
   EOT
   type = object({
-    jar = optional(list(string))
-    egg = optional(list(string))
-    whl = optional(list(string))
+    jar  = optional(list(string))
+    egg  = optional(list(string))
+    whl  = optional(list(string))
     pypi = optional(list(string))
     maven = optional(list(object({
       coordinates = string
-      repo       = optional(string)
-      exclusions = optional(list(string))
+      repo        = optional(string)
+      exclusions  = optional(list(string))
     })))
     cran = optional(list(string))
   })

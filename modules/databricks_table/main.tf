@@ -2,10 +2,10 @@ resource "databricks_table" "this" {
   name               = var.name
   catalog_name       = var.catalog_name
   schema_name        = var.schema_name
-  table_type        = var.table_type
+  table_type         = var.table_type
   data_source_format = var.data_source_format
-  comment           = var.comment
-  owner             = var.owner
+  comment            = var.comment
+  owner              = var.owner
 
   dynamic "column" {
     for_each = var.columns

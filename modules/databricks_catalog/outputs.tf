@@ -21,8 +21,8 @@ output "owner" {
 output "metadata" {
   description = "Metadata about the catalog including creation and last updated timestamps"
   value = {
-    created_at     = databricks_catalog.this.created_at
-    created_by     = databricks_catalog.this.created_by
+    created_at      = databricks_catalog.this.created_at
+    created_by      = databricks_catalog.this.created_by
     last_updated_at = databricks_catalog.this.last_updated_at
     last_updated_by = databricks_catalog.this.last_updated_by
   }

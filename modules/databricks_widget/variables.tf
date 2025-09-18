@@ -37,9 +37,9 @@ variable "multiselect_widget" {
 }
 
 variable "validate_widget_types" {
-  type = string
+  type        = string
   description = "Internal validation to ensure only one widget type is specified"
-  default = null
+  default     = null
   validation {
     condition = (
       var.text_widget != null && var.combobox_widget == null && var.multiselect_widget == null ||

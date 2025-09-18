@@ -11,24 +11,24 @@ output "external_location_name" {
 output "storage_location" {
   description = "Azure storage location details extracted from URL"
   value = {
-    container_name     = regex("^abfss://([^@]+)@", var.url)[0]
-    storage_account    = regex("@([^\\.]+)\\.dfs\\.core\\.windows\\.net", var.url)[0]
-    path              = regex("\\.windows\\.net(/.*)?$", var.url)[0]
-    credential        = var.credential_name
-    access_mode       = var.read_only == true ? "READ_ONLY" : "READ_WRITE"
+    container_name  = regex("^abfss://([^@]+)@", var.url)[0]
+    storage_account = regex("@([^\\.]+)\\.dfs\\.core\\.windows\\.net", var.url)[0]
+    path            = regex("\\.windows\\.net(/.*)?$", var.url)[0]
+    credential      = var.credential_name
+    access_mode     = var.read_only == true ? "READ_ONLY" : "READ_WRITE"
   }
 }
 
 output "external_location_config" {
   description = "Complete external location configuration"
   value = {
-    id            = databricks_external_location.this.id
-    name          = databricks_external_location.this.name
-    url           = databricks_external_location.this.url
-    credential    = databricks_external_location.this.credential_name
-    owner         = databricks_external_location.this.owner
-    comment       = databricks_external_location.this.comment
-    read_only     = var.read_only
+    id         = databricks_external_location.this.id
+    name       = databricks_external_location.this.name
+    url        = databricks_external_location.this.url
+    credential = databricks_external_location.this.credential_name
+    owner      = databricks_external_location.this.owner
+    comment    = databricks_external_location.this.comment
+    read_only  = var.read_only
   }
 }
 

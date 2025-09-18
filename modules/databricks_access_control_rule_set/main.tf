@@ -5,7 +5,7 @@ resource "databricks_permissions" "cluster_access" {
     for_each = var.access_rules
     content {
       permission_level = access_control.value.permission_level
-      user_name       = access_control.value.principal
+      user_name        = access_control.value.principal
     }
   }
 }

@@ -8,10 +8,10 @@ resource "databricks_permissions" "this" {
   dynamic "access_control" {
     for_each = var.access_controls
     content {
-      group_name       = access_control.value.group_name
+      group_name             = access_control.value.group_name
       service_principal_name = access_control.value.service_principal_name
-      user_name       = access_control.value.user_name
-      permission_level = access_control.value.permission_level
+      user_name              = access_control.value.user_name
+      permission_level       = access_control.value.permission_level
     }
   }
 }

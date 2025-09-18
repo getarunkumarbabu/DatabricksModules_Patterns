@@ -4,9 +4,9 @@ resource "databricks_mlflow_webhook" "this" {
   status      = var.status
 
   http_url_spec {
-    url                    = var.url
+    url                     = var.url
     enable_ssl_verification = var.enable_ssl_verification
-    authorization          = var.authorization
+    authorization           = var.authorization
   }
 
   dynamic "job_spec" {

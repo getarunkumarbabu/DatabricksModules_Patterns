@@ -1,14 +1,14 @@
 resource "databricks_cluster_policy" "this" {
-  name                = var.name
-  description         = var.description
-  definition          = var.definition
+  name                  = var.name
+  description           = var.description
+  definition            = var.definition
   max_clusters_per_user = var.max_clusters_per_user
 
   dynamic "policy_family_definition_overrides" {
     for_each = var.policy_family_id != null ? [1] : []
     content {
       policy_family_id = var.policy_family_id
-      overrides       = var.policy_family_overrides
+      overrides        = var.policy_family_overrides
     }
   }
 
@@ -43,8 +43,8 @@ resource "databricks_cluster_policy" "this" {
         for_each = try(var.libraries.maven, [])
         content {
           coordinates = maven.value.coordinates
-          repo       = maven.value.repo
-          exclusions = maven.value.exclusions
+          repo        = maven.value.repo
+          exclusions  = maven.value.exclusions
         }
       }
       dynamic "cran" {

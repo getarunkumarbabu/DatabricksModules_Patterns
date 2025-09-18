@@ -44,12 +44,12 @@ variable "owner" {
 variable "columns" {
   description = "List of columns in the table"
   type = list(object({
-    name     = string
+    name      = string
     type_name = string
     type_text = string
-    position = number
-    comment  = optional(string)
-    nullable = optional(bool, true)
+    position  = number
+    comment   = optional(string)
+    nullable  = optional(bool, true)
   }))
 }
 

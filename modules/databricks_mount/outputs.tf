@@ -29,9 +29,9 @@ output "azure_config" {
   value = {
     container_name       = var.container_name
     storage_account_name = var.storage_account_name
-    directory           = var.directory
-    auth_type           = var.auth_type
-    auth_method         = var.auth_type == "SERVICE_PRINCIPAL" ? "Service Principal" : "Managed Identity"
+    directory            = var.directory
+    auth_type            = var.auth_type
+    auth_method          = var.auth_type == "SERVICE_PRINCIPAL" ? "Service Principal" : "Managed Identity"
   }
 }
 
@@ -39,9 +39,9 @@ output "mount_source" {
   description = "Full details about the mount source location"
   value = {
     storage_account = var.storage_account_name
-    container      = var.container_name
-    directory      = var.directory != "" ? var.directory : "/"
-    endpoint_type  = "ABFS"
-    region        = regex(".*\\.([a-z]+)[0-9]+\\..*", var.uri)[0]
+    container       = var.container_name
+    directory       = var.directory != "" ? var.directory : "/"
+    endpoint_type   = "ABFS"
+    region          = regex(".*\\.([a-z]+)[0-9]+\\..*", var.uri)[0]
   }
 }

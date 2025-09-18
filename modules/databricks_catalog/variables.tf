@@ -1,7 +1,7 @@
 variable "name" {
   description = "The name of the catalog. Must be unique within the workspace. May only contain alphanumeric characters, underscores, and dots."
   type        = string
-  
+
   validation {
     condition     = can(regex("^[a-zA-Z0-9_.]+$", var.name))
     error_message = "The catalog name can only contain alphanumeric characters, underscores, and dots."
@@ -36,7 +36,7 @@ variable "isolation_mode" {
   description = "Catalog isolation level. Can be OPEN or ISOLATED. In ISOLATED mode, only users explicitly granted access can access the catalog."
   type        = string
   default     = "OPEN"
-  
+
   validation {
     condition     = contains(["OPEN", "ISOLATED"], var.isolation_mode)
     error_message = "Isolation mode must be either OPEN or ISOLATED."

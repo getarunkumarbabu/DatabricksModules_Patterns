@@ -14,6 +14,6 @@ resource "databricks_job" "this" {
     }
   }
 
-    // max_retries is deprecated in newer provider versions and is intentionally
-    // not set here. See module README for alternatives (use runs API to retry).
-  }
+  // max_retries is deprecated in newer provider versions and is intentionally
+  // not set here. See module README for alternatives (use runs API to retry).
+}

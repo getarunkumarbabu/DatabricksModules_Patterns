@@ -51,7 +51,7 @@ output "cluster_size" {
     min_workers  = var.autoscale_config.min_workers
     max_workers  = var.autoscale_config.max_workers
     current_size = databricks_cluster.this.num_workers
-  } : {
+    } : {
     mode         = "fixed"
     num_workers  = var.num_workers
     current_size = databricks_cluster.this.num_workers
@@ -67,7 +67,7 @@ output "cluster_configuration" {
     }
     auto_termination = var.autotermination_minutes
     features = {
-      elastic_disk = var.enable_elastic_disk
+      elastic_disk          = var.enable_elastic_disk
       local_disk_encryption = var.enable_local_disk_encryption
     }
     custom_tags    = var.custom_tags
@@ -81,7 +81,7 @@ output "azure_attributes" {
   description = "Azure-specific attributes of the cluster configuration."
   value = var.azure_attributes != null ? {
     availability       = var.azure_attributes.availability
-    first_on_demand   = var.azure_attributes.first_on_demand
+    first_on_demand    = var.azure_attributes.first_on_demand
     spot_bid_max_price = var.azure_attributes.spot_bid_max_price
     vm_type = {
       driver = coalesce(var.driver_node_type_id, var.node_type_id)

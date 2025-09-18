@@ -36,5 +36,5 @@ variable "source_path" {
 locals {
   # Validation: exactly one of content, source, or source_path must be provided
   validate_content = (var.content != null ? 1 : 0) + (var.source != null ? 1 : 0) + (var.source_path != null ? 1 : 0)
-  validate_error = local.validate_content == 1 ? null : file("ERROR: Exactly one of content, source, or source_path must be provided")
+  validate_error   = local.validate_content == 1 ? null : file("ERROR: Exactly one of content, source, or source_path must be provided")
 }

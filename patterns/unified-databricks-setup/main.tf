@@ -1,13 +1,18 @@
 # =============================================================================
-# Databricks Role Assignments Pattern
+# Unified Databricks Group Role Assignment Pattern
 # =============================================================================
-# This pattern assigns roles to existing Azure AD groups in Databricks.
-# Features:
-# - Multiple admin groups support
-# - Multiple user groups with customizable roles
-# - Workspace access management
-# - All groups must already exist in Azure AD
+# This pattern manages Azure AD group role assignments in Databricks workspaces.
+# Supports both admin and user groups with customizable roles and access levels.
 # =============================================================================
+
+terraform {
+  required_providers {
+    databricks = {
+      source  = "databricks/databricks"
+      version = ">= 1.0.0"
+    }
+  }
+}
 
 # -----------------------------------------------------------------------------
 # Admin Groups Role Assignment
@@ -17,14 +22,9 @@ module "admin_groups" {
 
   for_each = { for group in var.admin_groups : group.display_name => group }
 
-  # Group configuration
-  group_name = each.value.display_name
-
-  # Admin role assignment
-  roles = concat(["admin"], each.value.additional_roles)
-
-  # Optional workspace access (enabled by default for admin)
-  workspace_access = true
+  group_name  = each.value.display_name
+  external_id = lookup(each.value, "external_id", null)
+  roles       = ["admin"]
 }
 
 # -----------------------------------------------------------------------------
@@ -35,14 +35,41 @@ module "user_groups" {
 
   for_each = { for group in var.user_groups : group.display_name => group }
 
-  # Group configuration
-  group_name = each.value.display_name
+  group_name            = each.value.display_name
+  external_id           = lookup(each.value, "external_id", null)
+  roles                 = lookup(each.value, "roles", ["user"])
+  workspace_access      = lookup(each.value, "workspace_access", true)
+  allow_cluster_create  = lookup(each.value, "allow_cluster_create", false)
+  databricks_sql_access = lookup(each.value, "databricks_sql_access", false)
+}
 
-  # Assign configured roles (defaults to ["user"] if not specified)
-  roles = each.value.roles
+# -----------------------------------------------------------------------------
+# Service Principals Role Assignment
+# -----------------------------------------------------------------------------
+# module "service_principals" {
+#   source = "../../modules/databricks_service_principal_role"
 
-  # Workspace access based on group configuration
-  workspace_access = each.value.workspace_access
+#   for_each = { for sp in var.service_principals : sp.application_id => sp }
+
+#   application_id       = each.value.application_id
+#   display_name         = lookup(each.value, "display_name", null)
+#   roles               = lookup(each.value, "roles", ["user"])
+#   workspace_access    = lookup(each.value, "workspace_access", true)
+#   allow_cluster_create = lookup(each.value, "allow_cluster_create", false)
+#   databricks_sql_access = lookup(each.value, "databricks_sql_access", false)
+# }
+
+# -----------------------------------------------------------------------------
+# Account Level Groups
+# -----------------------------------------------------------------------------
+module "account_level_groups" {
+  source = "../../modules/databricks_account_group"
+
+  for_each = { for group in var.account_level_groups : group.display_name => group }
+
+  display_name = each.value.display_name
+  account_id   = var.account_id
+  members      = lookup(each.value, "members", null)
 }
 
 # -----------------------------------------------------------------------------
@@ -57,8 +84,29 @@ locals {
 
   # Map groups to their assigned roles for validation
   group_roles = merge(
-    { for k, v in module.admin_groups : k => v.roles },
-    { for k, v in module.user_groups : k => v.roles }
+    { for k, v in module.admin_groups : k => v.assigned_roles },
+    { for k, v in module.user_groups : k => v.assigned_roles }
   )
+
+  # Group configuration summary
+  admin_group_summary = {
+    for name, group in module.admin_groups : name => {
+      id               = group.group_id
+      roles            = group.assigned_roles
+      workspace_access = group.workspace_access
+      cluster_create   = group.allow_cluster_create
+      sql_access       = group.databricks_sql_access
+    }
+  }
+
+  user_group_summary = {
+    for name, group in module.user_groups : name => {
+      id               = group.group_id
+      roles            = group.assigned_roles
+      workspace_access = group.workspace_access
+      cluster_create   = group.allow_cluster_create
+      sql_access       = group.databricks_sql_access
+    }
+  }
 }
 

@@ -1,46 +1,130 @@
 # =============================================================================
-# Databricks Role Assignment Variables
-# =============================================================================
-# This file defines the input variables required for role assignments.
+# Unified Databricks Group Role Assignment Variables
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Admin Group Variable
+# Admin Groups Configuration
 # -----------------------------------------------------------------------------
-variable "existing_admin_group_name" {
-  description = <<DESC
-The name of the existing Azure AD group to be assigned admin role in Databricks.
-This group must already exist in Azure AD and be synchronized with Databricks.
-The group will be assigned admin privileges in Databricks.
-DESC
-
-  type = string
+variable "admin_groups" {
+  description = "List of admin group configurations with Azure AD integration"
+  type = list(object({
+    display_name          = string
+    external_id           = optional(string)
+    allow_cluster_create  = optional(bool, true)
+    databricks_sql_access = optional(bool, true)
+  }))
 
   validation {
-    condition     = length(var.existing_admin_group_name) > 0
-    error_message = "Admin group name cannot be empty."
+    condition     = length(var.admin_groups) > 0
+    error_message = "At least one admin group must be specified."
+  }
+
+  validation {
+    condition     = alltrue([for g in var.admin_groups : length(g.display_name) > 0])
+    error_message = "Admin group display names cannot be empty."
   }
 }
 
 # -----------------------------------------------------------------------------
-# User Groups Variable
+# User Groups Configuration
 # -----------------------------------------------------------------------------
-variable "existing_user_group_names" {
-  description = <<DESC
-List of existing Azure AD group names to be assigned user role in Databricks.
-These groups must already exist in Azure AD and be synchronized with Databricks.
-The groups will be assigned user role and SQL access in Databricks.
-DESC
-
-  type = list(string)
+variable "user_groups" {
+  description = "List of user group configurations with Azure AD integration"
+  type = list(object({
+    display_name          = string
+    external_id           = optional(string)
+    roles                 = optional(list(string), ["user"])
+    workspace_access      = optional(bool, true)
+    allow_cluster_create  = optional(bool, false)
+    databricks_sql_access = optional(bool, false)
+  }))
 
   validation {
-    condition     = length(var.existing_user_group_names) > 0
-    error_message = "At least one user group must be specified."
+    condition     = alltrue([for g in var.user_groups : length(g.display_name) > 0])
+    error_message = "User group display names cannot be empty."
   }
 
   validation {
-    condition     = alltrue([for name in var.existing_user_group_names : length(name) > 0])
-    error_message = "User group names cannot be empty."
+    condition = alltrue([
+      for group in var.user_groups : alltrue([
+        for role in group.roles : contains([
+          "admin", "user", "account_admin", "cluster_admin", "workspace_admin",
+          "token_admin", "notebook_admin", "sql_admin", "job_admin",
+          "mlflow_admin", "feature_store_admin"
+        ], role)
+      ])
+    ])
+    error_message = "All roles must be valid Databricks roles."
   }
+}
+
+# -----------------------------------------------------------------------------
+# Service Principals Configuration
+# -----------------------------------------------------------------------------
+variable "service_principals" {
+  description = "List of Azure AD service principal configurations for Databricks access"
+  type = list(object({
+    application_id        = string
+    display_name          = optional(string)
+    roles                 = optional(list(string), ["user"])
+    workspace_access      = optional(bool, true)
+    allow_cluster_create  = optional(bool, false)
+    databricks_sql_access = optional(bool, false)
+  }))
+
+  validation {
+    condition     = alltrue([for sp in var.service_principals : length(sp.application_id) > 0])
+    error_message = "Service principal application_id cannot be empty."
+  }
+
+  validation {
+    condition = alltrue([
+      for sp in var.service_principals : alltrue([
+        for role in sp.roles : contains([
+          "admin", "user", "account_admin", "cluster_admin", "workspace_admin",
+          "token_admin", "notebook_admin", "sql_admin", "job_admin",
+          "mlflow_admin", "feature_store_admin"
+        ], role)
+      ])
+    ])
+    error_message = "All service principal roles must be valid Databricks roles."
+  }
+
+  default = []
+}
+variable "account_level_groups" {
+  description = "List of account-level group configurations that will be available across all workspaces"
+  type = list(object({
+    display_name          = string
+    external_id           = optional(string)
+    roles                 = optional(list(string), ["user"])
+    allow_cluster_create  = optional(bool, false)
+    databricks_sql_access = optional(bool, false)
+  }))
+
+  validation {
+    condition     = alltrue([for g in var.account_level_groups : length(g.display_name) > 0])
+    error_message = "Account level group display names cannot be empty."
+  }
+
+  validation {
+    condition = alltrue([
+      for group in var.account_level_groups : alltrue([
+        for role in group.roles : contains([
+          "admin", "user", "account_admin", "cluster_admin", "workspace_admin",
+          "token_admin", "notebook_admin", "sql_admin", "job_admin",
+          "mlflow_admin", "feature_store_admin"
+        ], role)
+      ])
+    ])
+    error_message = "All account level group roles must be valid Databricks roles."
+  }
+
+  default = []
+}
+
+variable "account_id" {
+  description = "Databricks account ID for account-level operations"
+  type        = string
+  default     = null
 }

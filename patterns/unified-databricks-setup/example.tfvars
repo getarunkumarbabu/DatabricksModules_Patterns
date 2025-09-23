@@ -3,19 +3,47 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Admin Group Configuration
+# Admin Groups Configuration
 # -----------------------------------------------------------------------------
-# Name of the existing Azure AD group to be assigned admin role
-# This group must already exist in Azure AD and be synchronized with Databricks
-existing_admin_group_name = "databricks-admins@yourdomain.com"
+# List of admin groups with their configurations
+admin_groups = [
+  {
+    display_name = "databricks-super-admins@yourdomain.com"
+    additional_roles = ["super-admin"]  # Additional roles beyond admin
+  },
+  {
+    display_name = "databricks-admins@yourdomain.com"
+    additional_roles = []  # Just the default admin role
+  },
+  {
+    display_name = "databricks-security-admins@yourdomain.com"
+    additional_roles = ["security-admin"]
+  }
+]
 
 # -----------------------------------------------------------------------------
 # User Groups Configuration
 # -----------------------------------------------------------------------------
-# List of existing Azure AD groups to be assigned user role and SQL access
-# These groups must already exist in Azure AD and be synchronized with Databricks
-existing_user_group_names = [
-  "databricks-data-scientists@yourdomain.com",
-  "databricks-data-engineers@yourdomain.com",
-  "databricks-analysts@yourdomain.com"
+# List of user groups with their specific role configurations
+user_groups = [
+  {
+    display_name = "databricks-data-scientists@yourdomain.com"
+    roles = ["user", "notebook-user"]
+    workspace_access = true
+  },
+  {
+    display_name = "databricks-data-engineers@yourdomain.com"
+    roles = ["user", "job-user"]
+    workspace_access = true
+  },
+  {
+    display_name = "databricks-analysts@yourdomain.com"
+    roles = ["user", "sql-user"]
+    workspace_access = true
+  },
+  {
+    display_name = "databricks-readonly@yourdomain.com"
+    roles = ["user"]
+    workspace_access = false  # Read-only users don't need workspace access
+  }
 ]

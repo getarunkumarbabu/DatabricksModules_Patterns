@@ -1,36 +1,64 @@
 # =============================================================================
-# Databricks Role Assignments
+# Databricks Role Assignments Pattern
 # =============================================================================
-# This configuration assigns roles to existing Azure AD groups in Databricks.
-# All groups must already exist in Azure AD.
+# This pattern assigns roles to existing Azure AD groups in Databricks.
+# Features:
+# - Multiple admin groups support
+# - Multiple user groups with customizable roles
+# - Workspace access management
+# - All groups must already exist in Azure AD
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Admin Role Assignment
+# Admin Groups Role Assignment
 # -----------------------------------------------------------------------------
-resource "databricks_group_role" "admin" {
-  # Reference the existing Azure AD admin group
-  display_name = var.existing_admin_group_name
+module "admin_groups" {
+  source = "../../modules/databricks_group_role"
 
-  # Assign admin role to the group
-  # Note: Admin role automatically includes workspace access
-  roles = ["admin"]
+  for_each = { for group in var.admin_groups : group.display_name => group }
+
+  # Group configuration
+  group_name = each.value.display_name
+
+  # Admin role assignment
+  roles = concat(["admin"], each.value.additional_roles)
+
+  # Optional workspace access (enabled by default for admin)
+  workspace_access = true
 }
 
 # -----------------------------------------------------------------------------
-# User Role and Workspace Access
+# User Groups Role Assignment
 # -----------------------------------------------------------------------------
-resource "databricks_group_role" "users" {
-  # Create a role assignment for each user group
-  for_each = toset(var.existing_user_group_names)
+module "user_groups" {
+  source = "../../modules/databricks_group_role"
 
-  # Reference the existing Azure AD group
-  display_name = each.value
+  for_each = { for group in var.user_groups : group.display_name => group }
 
-  # Assign user role
-  roles = ["user"]
+  # Group configuration
+  group_name = each.value.display_name
 
-  # Enable workspace access for the group
-  workspace_access = true
+  # Assign configured roles (defaults to ["user"] if not specified)
+  roles = each.value.roles
+
+  # Workspace access based on group configuration
+  workspace_access = each.value.workspace_access
+}
+
+# -----------------------------------------------------------------------------
+# Workspace Group Organization
+# -----------------------------------------------------------------------------
+locals {
+  # Flatten all group IDs for easy reference
+  all_group_ids = merge(
+    { for k, v in module.admin_groups : k => v.group_id },
+    { for k, v in module.user_groups : k => v.group_id }
+  )
+
+  # Map groups to their assigned roles for validation
+  group_roles = merge(
+    { for k, v in module.admin_groups : k => v.roles },
+    { for k, v in module.user_groups : k => v.roles }
+  )
 }
 

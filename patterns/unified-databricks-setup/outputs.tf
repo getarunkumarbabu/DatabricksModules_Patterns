@@ -5,38 +5,56 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Admin Group Outputs
+# Admin Groups Outputs
 # -----------------------------------------------------------------------------
-output "admin_group_roles" {
+output "admin_groups" {
   description = <<DESC
-The roles assigned to the admin Azure AD group in Databricks.
-This can be used to verify the admin role assignment.
+Map of admin group names to their configuration details including:
+- Group ID
+- Assigned roles
+- Display name
 DESC
 
-  value = databricks_group_role.admin.roles
+  value = {
+    for name, group in module.admin_groups : name => {
+      group_id     = group.group_id
+      roles        = group.roles
+      display_name = group.display_name
+    }
+  }
 }
 
 # -----------------------------------------------------------------------------
 # User Groups Outputs
 # -----------------------------------------------------------------------------
-output "user_group_roles" {
+output "user_groups" {
   description = <<DESC
-Map of user group names to their assigned roles in Databricks.
-This can be used to verify user role assignments.
+Map of user group names to their configuration details including:
+- Group ID
+- Assigned roles
+- Display name
+- Workspace access status
 DESC
 
   value = {
-    for name, group in databricks_group_role.users : name => group.roles
+    for name, group in module.user_groups : name => {
+      group_id         = group.group_id
+      roles            = group.roles
+      display_name     = group.display_name
+      workspace_access = group.workspace_access
+    }
   }
 }
 
-output "user_group_sql_permissions" {
-  description = <<DESC
-Map of user group names to their SQL permissions in Databricks.
-This can be used to verify SQL access assignments.
-DESC
+# -----------------------------------------------------------------------------
+# Combined Group Information
+# -----------------------------------------------------------------------------
+output "all_groups" {
+  description = "Map of all group IDs for easy reference"
+  value       = local.all_group_ids
+}
 
-  value = {
-    for name, perms in databricks_sql_permissions.user_groups : name => perms.privileges
-  }
+output "group_roles" {
+  description = "Map of all groups to their assigned roles"
+  value       = local.group_roles
 }

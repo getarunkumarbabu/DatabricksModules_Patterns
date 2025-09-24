@@ -31,33 +31,33 @@ provider "databricks" {
 }
 
 # -----------------------------------------------------------------------------
-# Admin Groups Role Assignment
+# Admin Groups Role Assignment (Commented out - modules deleted for cleanup)
 # -----------------------------------------------------------------------------
-module "admin_groups" {
-  source = "../../modules/databricks_group_role"
-
-  for_each = { for group in var.admin_groups : group.display_name => group }
-
-  group_name  = each.value.display_name
-  external_id = lookup(each.value, "external_id", null)
-  roles       = [] # Temporarily disable role assignment while testing
-}
+# module "admin_groups" {
+#   source = "../../modules/databricks_group_role"
+# 
+#   for_each = { for group in var.admin_groups : group.display_name => group }
+# 
+#   group_name  = each.value.display_name
+#   external_id = lookup(each.value, "external_id", null)
+#   roles       = [] # Temporarily disable role assignment while testing
+# }
 
 # -----------------------------------------------------------------------------
-# User Groups Role Assignment
+# User Groups Role Assignment (Commented out - modules deleted for cleanup)
 # -----------------------------------------------------------------------------
-module "user_groups" {
-  source = "../../modules/databricks_group_role"
-
-  for_each = { for group in var.user_groups : group.display_name => group }
-
-  group_name            = each.value.display_name
-  external_id           = lookup(each.value, "external_id", null)
-  roles                 = lookup(each.value, "roles", ["user"])
-  workspace_access      = lookup(each.value, "workspace_access", true)
-  allow_cluster_create  = lookup(each.value, "allow_cluster_create", false)
-  databricks_sql_access = lookup(each.value, "databricks_sql_access", true)
-}
+# module "user_groups" {
+#   source = "../../modules/databricks_group_role"
+# 
+#   for_each = { for group in var.user_groups : group.display_name => group }
+# 
+#   group_name            = each.value.display_name
+#   external_id           = lookup(each.value, "external_id", null)
+#   roles                 = lookup(each.value, "roles", ["user"])
+#   workspace_access      = lookup(each.value, "workspace_access", true)
+#   allow_cluster_create  = lookup(each.value, "allow_cluster_create", false)
+#   databricks_sql_access = lookup(each.value, "databricks_sql_access", true)
+# }
 
 # -----------------------------------------------------------------------------
 # Service Principals Role Assignment (Commented out - not supported in older provider version)
@@ -86,40 +86,40 @@ module "user_groups" {
 # }
 
 # -----------------------------------------------------------------------------
-# Workspace Group Organization
+# Workspace Group Organization (Commented out - modules deleted for cleanup)
 # -----------------------------------------------------------------------------
-locals {
-  # Flatten all group IDs for easy reference
-  all_group_ids = merge(
-    { for k, v in module.admin_groups : k => v.group_id },
-    { for k, v in module.user_groups : k => v.group_id }
-  )
-
-  # Map groups to their assigned roles for validation
-  group_roles = merge(
-    { for k, v in module.admin_groups : k => v.assigned_roles },
-    { for k, v in module.user_groups : k => v.assigned_roles }
-  )
-
-  # Group configuration summary
-  admin_group_summary = {
-    for name, group in module.admin_groups : name => {
-      id               = group.group_id
-      roles            = group.assigned_roles
-      workspace_access = group.workspace_access
-      cluster_create   = group.allow_cluster_create
-      sql_access       = group.databricks_sql_access
-    }
-  }
-
-  user_group_summary = {
-    for name, group in module.user_groups : name => {
-      id               = group.group_id
-      roles            = group.assigned_roles
-      workspace_access = group.workspace_access
-      cluster_create   = group.allow_cluster_create
-      sql_access       = group.databricks_sql_access
-    }
-  }
-}
+# locals {
+#   # Flatten all group IDs for easy reference
+#   all_group_ids = merge(
+#     { for k, v in module.admin_groups : k => v.group_id },
+#     { for k, v in module.user_groups : k => v.group_id }
+#   )
+# 
+#   # Map groups to their assigned roles for validation
+#   group_roles = merge(
+#     { for k, v in module.admin_groups : k => v.assigned_roles },
+#     { for k, v in module.user_groups : k => v.assigned_roles }
+#   )
+# 
+#   # Group configuration summary
+#   admin_group_summary = {
+#     for name, group in module.admin_groups : name => {
+#       id               = group.group_id
+#       roles            = group.assigned_roles
+#       workspace_access = group.workspace_access
+#       cluster_create   = group.allow_cluster_create
+#       sql_access       = group.databricks_sql_access
+#     }
+#   }
+# 
+#   user_group_summary = {
+#     for name, group in module.user_groups : name => {
+#       id               = group.group_id
+#       roles            = group.assigned_roles
+#       workspace_access = group.workspace_access
+#       cluster_create   = group.allow_cluster_create
+#       sql_access       = group.databricks_sql_access
+#     }
+#   }
+# }
 

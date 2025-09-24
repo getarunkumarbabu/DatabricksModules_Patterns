@@ -11,7 +11,7 @@ resource "databricks_service_principal" "this" {
   display_name   = var.display_name
 }
 
-# Service principal role assignment not supported in older provider version
+# Service principal role assignment now supported in v1.90.0
 # resource "databricks_service_principal_role" "this" {
 #   for_each = toset(var.roles)
 # 

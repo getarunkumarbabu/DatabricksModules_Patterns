@@ -1,160 +1,316 @@
-# Databricks Group Role Assignment Module
+# Databricks Group Role Assignment Module# Databricks Group Role Assignment Module
 
-This module creates and manages Databricks groups with comprehensive role assignments and access controls. Enhanced for Azure AD integration with advanced permissions management.
 
-## Features
 
-- **Azure AD Integration**: Support for external groups via `external_id`
-- **Granular Access Control**: Fine-tuned permissions for clusters, instance pools, and SQL access
-- **Role-Based Access**: Multiple workspace-level roles assignment
-- **Direct Member Management**: Optional direct user membership management
-- **Flexible Configuration**: Comprehensive variable options for different use cases
+This module creates and manages Databricks groups with comprehensive role assignments and access controls. Enhanced for Azure AD integration with advanced permissions management.This module creates and manages Databricks groups with comprehensive role assignments and access controls. Enhanced for Azure AD integration with advanced permissions management.
 
-## Usage
 
-### Basic Usage
 
-```hcl
-module "databricks_group" {
-  source = "./modules/databricks_group_role"
+## Features## Features
 
-  group_name = "data-scientists"
-  roles      = ["user", "notebook_admin"]
 
-  # Access permissions
-  allow_cluster_create = true
-  databricks_sql_access = true
-}
+
+- **Azure AD Integration**: Support for external groups via `external_id`- **Azure AD Integration**: Support for external groups via `external_id`
+
+- **Granular Access Control**: Fine-tuned permissions for clusters, instance pools, and SQL access- **Granular Access Control**: Fine-tuned permissions for clusters, instance pools, and SQL access
+
+- **Role-Based Access**: Multiple workspace-level roles assignment- **Role-Based Access**: Multiple workspace-level roles assignment
+
+- **Direct Member Management**: Optional direct user membership management- **Direct Member Management**: Optional direct user membership management
+
+- **Flexible Configuration**: Comprehensive variable options for different use cases- **Flexible Configuration**: Comprehensive variable options for different use cases
+
+
+
+## Usage## Usage
+
+
+
+### Basic Usage### Basic Usage
+
+
+
+```hcl```hcl
+
+module "databricks_group" {module "databricks_group" {
+
+  source = "./modules/databricks_group_role"  source = "./modules/databricks_group_role"
+
+
+
+  group_name = "data-scientists"  group_name = "data-scientists"
+
+  roles      = ["user", "notebook_admin"]  roles      = ["user", "notebook_admin"]
+
+
+
+  # Access permissions  # Access permissions
+
+  allow_cluster_create = true  allow_cluster_create = true
+
+  databricks_sql_access = true  databricks_sql_access = true
+
+}}
+
+``````
+
+
+
+### Azure AD Integration### Azure AD Integration
+
+
+
+```hcl```hcl
+
+module "azure_ad_group" {module "azure_ad_group" {
+
+  source = "./modules/databricks_group_role"  source = "./modules/databricks_group_role"
+
+
+
+  group_name  = "azure-data-engineers"  group_name  = "azure-data-engineers"
+
+  external_id = "12345678-1234-1234-1234-123456789012"  # Azure AD Group Object ID  external_id = "12345678-1234-1234-1234-123456789012"  # Azure AD Group Object ID
+
+
+
+  roles = ["user", "cluster_admin", "job_admin"]  roles = ["user", "cluster_admin", "job_admin"]
+
+
+
+  # Advanced permissions  # Advanced permissions
+
+  allow_cluster_create       = true  allow_cluster_create       = true
+
+  databricks_sql_access      = true  databricks_sql_access      = true
+
+}### Using Existing Azure AD Groups
+
 ```
 
-### Azure AD Integration
-
 ```hcl
-module "azure_ad_group" {
+
+### With Direct Member Managementmodule "existing_azure_ad_group" {
+
   source = "./modules/databricks_group_role"
 
-  group_name  = "azure-data-engineers"
-  external_id = "12345678-1234-1234-1234-123456789012"  # Azure AD Group Object ID
-
-  roles = ["user", "cluster_admin", "job_admin"]
-
-  # Advanced permissions
-  allow_cluster_create       = true
-  databricks_sql_access      = true
-### Using Existing Azure AD Groups
-
 ```hcl
-module "existing_azure_ad_group" {
-  source = "./modules/databricks_group_role"
 
-  # Reference existing SCIM-synced Azure AD group
-  group_name  = "existing-data-engineers"
+module "managed_group" {  # Reference existing SCIM-synced Azure AD group
+
+  source = "./modules/databricks_group_role"  group_name  = "existing-data-engineers"
+
   external_id = "87654321-4321-4321-4321-210987654321"  # Azure AD Group Object ID
-
-  # Roles will be assigned to the existing group
-  roles = ["user", "cluster_admin"]
-
-  # Permissions can still be configured
-  allow_cluster_create  = true
-  databricks_sql_access = true
-}
-```
-
-### With Direct Member Management
-
-```hcl
-module "managed_group" {
-  source = "./modules/databricks_group_role"
 
   group_name = "managed-users"
 
-  roles = ["user"]
+  # Roles will be assigned to the existing group
 
-  # Direct member management
-  member_user_ids = [
-    "user1@example.com",
-    "user2@example.com"
-  ]
+  roles = ["user"]  roles = ["user", "cluster_admin"]
+
+
+
+  # Direct member management  # Permissions can still be configured
+
+  member_user_ids = [  allow_cluster_create  = true
+
+    "user1@example.com",  databricks_sql_access = true
+
+    "user2@example.com"}
+
+  ]```
+
 }
-```
 
-## Requirements
+```### With Direct Member Management
 
-| Name | Version |
+
+
+## Requirements```hcl
+
+module "managed_group" {
+
+| Name | Version |  source = "./modules/databricks_group_role"
+
 |------|---------|
-| terraform | >= 1.0.0 |
+
+| terraform | >= 1.0.0 |  group_name = "managed-users"
+
 | databricks | >= 1.0.0 |
+
+  roles = ["user"]
 
 ## Providers
 
-| Name | Version |
-|------|---------|
+  # Direct member management
+
+| Name | Version |  member_user_ids = [
+
+|------|---------|    "user1@example.com",
+
+| databricks | >= 1.0.0 |    "user2@example.com"
+
+  ]
+
+## Input Variables}
+
+```
+
+### Group Configuration
+
+## Requirements
+
+| Name | Description | Type | Default | Required |
+
+|------|-------------|------|---------|:--------:|| Name | Version |
+
+| group_name | Display name of the Databricks group | `string` | n/a | yes ||------|---------|
+
+| external_id | External ID for Azure AD integration | `string` | `null` | no || terraform | >= 1.0.0 |
+
 | databricks | >= 1.0.0 |
 
+### Access Permissions
+
+## Providers
+
+| Name | Description | Type | Default | Required |
+
+|------|-------------|------|---------|:--------:|| Name | Version |
+
+| workspace_access | Grant workspace access (legacy) | `bool` | `true` | no ||------|---------|
+
+| allow_cluster_create | Allow cluster creation | `bool` | `false` | no || databricks | >= 1.0.0 |
+
+| databricks_sql_access | Grant Databricks SQL access | `bool` | `false` | no |
+
 ## Input Variables
+
+### Role Assignments
 
 ### Group Configuration
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+
+|------|-------------|------|---------|:--------:|| Name | Description | Type | Default | Required |
+
+| roles | List of roles to assign | `list(string)` | `[]` | no ||------|-------------|------|---------|:--------:|
+
 | group_name | Display name of the Databricks group | `string` | n/a | yes |
-| external_id | External ID for Azure AD integration | `string` | `null` | no |
 
-### Access Permissions
+**Valid Roles:**| external_id | External ID for Azure AD integration | `string` | `null` | no |
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| workspace_access | Grant workspace access (legacy) | `bool` | `true` | no |
-| allow_cluster_create | Allow cluster creation | `bool` | `false` | no |
-| databricks_sql_access | Grant Databricks SQL access | `bool` | `false` | no |
-
-### Role Assignments
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| roles | List of roles to assign | `list(string)` | `[]` | no |
-
-**Valid Roles:**
 - `admin` - Full administrative access
-- `user` - Basic user access
+
+- `user` - Basic user access### Access Permissions
+
 - `account_admin` - Account-level administration
-- `cluster_admin` - Cluster management
-- `workspace_admin` - Workspace administration
-- `token_admin` - Token management
-- `notebook_admin` - Notebook administration
-- `sql_admin` - SQL administration
+
+- `cluster_admin` - Cluster management| Name | Description | Type | Default | Required |
+
+- `workspace_admin` - Workspace administration|------|-------------|------|---------|:--------:|
+
+- `token_admin` - Token management| workspace_access | Grant workspace access (legacy) | `bool` | `true` | no |
+
+- `notebook_admin` - Notebook administration| allow_cluster_create | Allow cluster creation | `bool` | `false` | no |
+
+- `sql_admin` - SQL administration| databricks_sql_access | Grant Databricks SQL access | `bool` | `false` | no |
+
 - `job_admin` - Job management
-- `mlflow_admin` - MLflow administration
+
+- `mlflow_admin` - MLflow administration### Role Assignments
+
 - `feature_store_admin` - Feature Store administration
 
-### Member Management
+| Name | Description | Type | Default | Required |
+
+### Member Management|------|-------------|------|---------|:--------:|
+
+| roles | List of roles to assign | `list(string)` | `[]` | no |
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| member_user_ids | Direct user members | `list(string)` | `[]` | no |
 
-### Lifecycle Management
+|------|-------------|------|---------|:--------:|**Valid Roles:**
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| force_delete_group | Force delete with members | `bool` | `false` | no |
+| member_user_ids | Direct user members | `list(string)` | `[]` | no |- `admin` - Full administrative access
 
-## Outputs
+- `user` - Basic user access
 
-### Group Information
+### Lifecycle Management- `account_admin` - Account-level administration
 
-| Name | Description |
+- `cluster_admin` - Cluster management
+
+| Name | Description | Type | Default | Required |- `workspace_admin` - Workspace administration
+
+|------|-------------|------|---------|:--------:|- `token_admin` - Token management
+
+| force_delete_group | Force delete with members | `bool` | `false` | no |- `notebook_admin` - Notebook administration
+
+- `sql_admin` - SQL administration
+
+## Outputs- `job_admin` - Job management
+
+- `mlflow_admin` - MLflow administration
+
+### Group Information- `feature_store_admin` - Feature Store administration
+
+
+
+| Name | Description |### Member Management
+
 |------|-------------|
-| group_id | Databricks group ID |
-| group_name | Group display name |
-| external_id | External ID (Azure AD) |
+
+| group_id | Databricks group ID || Name | Description | Type | Default | Required |
+
+| group_name | Group display name ||------|-------------|------|---------|:--------:|
+
+| external_id | External ID (Azure AD) || member_user_ids | Direct user members | `list(string)` | `[]` | no |
+
+
+
+### Access Permissions### Lifecycle Management
+
+
+
+| Name | Description || Name | Description | Type | Default | Required |
+
+|------|-------------||------|-------------|------|---------|:--------:|
+
+| workspace_access | Workspace access status || force_delete_group | Force delete with members | `bool` | `false` | no |
+
+| allow_cluster_create | Cluster creation permission |
+
+| databricks_sql_access | SQL access status |## Outputs
+
+
+
+### Role and Member Information### Group Information
+
+
+
+| Name | Description || Name | Description |
+
+|------|-------------||------|-------------|
+
+| assigned_roles | List of assigned roles || group_id | Databricks group ID |
+
+| roles | Role assignment map || group_name | Group display name |
+
+| member_count | Number of direct members || external_id | External ID (Azure AD) |
+
+| group_config | Complete group configuration summary |
 
 ### Access Permissions
 
+## Notes
+
 | Name | Description |
-|------|-------------|
-| workspace_access | Workspace access status |
-| allow_cluster_create | Cluster creation permission |
+
+- **Role Assignment Limitation**: In Databricks provider v0.6.2, role assignment resources (`databricks_group_role`) are not available. Roles are configured but actual assignment may require manual steps or provider upgrades.|------|-------------|
+
+- **SCIM Integration**: When `external_id` is provided, the group will be linked to the corresponding Azure AD group for automatic membership synchronization.| workspace_access | Workspace access status |
+
+- **Permission Management**: Access permissions are set at the group level and apply to all group members.| allow_cluster_create | Cluster creation permission |
 | databricks_sql_access | SQL access status |
 
 ### Role and Member Information

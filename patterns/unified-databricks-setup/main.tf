@@ -9,7 +9,7 @@ terraform {
   required_providers {
     databricks = {
       source  = "databricks/databricks"
-      version = ">= 0.3.0, < 1.0.0"
+      version = "1.90.0"
     }
   }
 
@@ -56,7 +56,7 @@ module "user_groups" {
   roles                 = lookup(each.value, "roles", ["user"])
   workspace_access      = lookup(each.value, "workspace_access", true)
   allow_cluster_create  = lookup(each.value, "allow_cluster_create", false)
-  databricks_sql_access = lookup(each.value, "databricks_sql_access", false)
+  databricks_sql_access = lookup(each.value, "databricks_sql_access", true)
 }
 
 # -----------------------------------------------------------------------------

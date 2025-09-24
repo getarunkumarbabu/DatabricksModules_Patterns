@@ -1,12 +1,12 @@
 # =============================================================================
 # Databricks Group Role Assignment Module
 # =============================================================================
-# This module manages Databricks groups and assigns roles to them.
+# This module creates Databricks groups and assigns roles to them.
 # Supports both existing SCIM-synced Azure AD groups and newly created groups.
 # Enhanced for Azure AD integration with comprehensive access controls.
 #
-# NOTE: Role assignment is limited in Databricks provider v0.6.2
-# For full role assignment functionality, consider upgrading to a newer provider version.
+# NOTE: Using Databricks provider v1.90.0 with full feature support
+# Role assignment functionality is now available with databricks_group_role resource
 # =============================================================================
 
 terraform {
@@ -18,26 +18,11 @@ terraform {
 }
 
 # ------------------------------------------------------------------------------
-# Existing Databricks Group Data Source (for SCIM-synced Azure AD groups)
-# ------------------------------------------------------------------------------
-data "databricks_group" "existing" {
-  count = var.external_id != null ? 1 : 0
-
-  # For SCIM-synced groups, use both display_name and external_id
-  display_name = var.group_name
-  external_id  = var.external_id
-}
-
-# ------------------------------------------------------------------------------
-# Databricks Group Resource (only create if not using existing group)
+# Databricks Group Resource (create new or reference existing SCIM group)
 # ------------------------------------------------------------------------------
 resource "databricks_group" "this" {
-  count = var.external_id == null ? 1 : 0
-
   display_name = var.group_name
-
-  # No external_id for newly created groups
-  # external_id = var.external_id
+  external_id  = var.external_id  # Include external_id if provided (for SCIM groups)
 
   # Lifecycle management
   lifecycle {
@@ -49,36 +34,27 @@ resource "databricks_group" "this" {
 }
 
 # ------------------------------------------------------------------------------
-# Local values for unified group reference
+# Databricks Group Member Management
 # ------------------------------------------------------------------------------
-locals {
-  # Use existing group if available, otherwise use created group
-  group_id       = var.external_id != null ? data.databricks_group.existing[0].id : databricks_group.this[0].id
-  group_name_ref = var.external_id != null ? data.databricks_group.existing[0].display_name : databricks_group.this[0].display_name
-  external_id_ref = var.external_id != null ? data.databricks_group.existing[0].external_id : null
+resource "databricks_group_member" "this" {
+  for_each = toset(var.member_user_ids)
+
+  group_id  = databricks_group.this.id
+  member_id = each.value
 }
 
 # ------------------------------------------------------------------------------
-# Role Assignments (Commented out - not supported in older provider version)
+# Role Assignments (Now available in v1.90.0)
 # ------------------------------------------------------------------------------
-# Note: databricks_group_role is not available in Databricks provider v0.6.2
-# In older versions, roles were assigned differently or through permissions
+# Note: databricks_group_role resource is available in Databricks provider v1.0.0+
+# Uncomment the following block to enable role assignments for groups
 # resource "databricks_group_role" "this" {
 #   for_each = toset(var.roles)
-# 
+#
 #   group_id = databricks_group.this.id
 #   role     = each.value
-# 
+#
 #   depends_on = [
 #     databricks_group.this
 #   ]
 # }
-
-
-
-resource "databricks_group_member" "this" {
-  count = var.external_id == null ? length(var.member_user_ids) : 0
-
-  group_id  = local.group_id
-  member_id = var.member_user_ids[count.index]
-}

@@ -74,15 +74,15 @@ output "permission_summary" {
   value = {
     groups_with_cluster_create = length([
       for g in concat(values(local.admin_group_summary), values(local.user_group_summary))
-      : g if g.cluster_create
+      : g if g.cluster_create == true
     ])
     groups_with_sql_access = length([
       for g in concat(values(local.admin_group_summary), values(local.user_group_summary))
-      : g if g.sql_access
+      : g if g.sql_access == true
     ])
     groups_with_workspace_access = length([
       for g in concat(values(local.admin_group_summary), values(local.user_group_summary))
-      : g if g.workspace_access
+      : g if g.workspace_access == true
     ])
   }
 }

@@ -4,42 +4,21 @@ This repository contains a collection of Terraform modules for managing Databric
 
 ## Available Modules
 
-### Workspace and Access
-- [databricks_workspace_conf](./modules/databricks_workspace_conf) - Manage workspace configurations
-- [databricks_directory](./modules/databricks_directory) - Manage workspace directories
-- [databricks_repo](./modules/databricks_repo) - Manage Git repositories
-- [databricks_token](./modules/databricks_token) - Manage access tokens
+### Identity and Access Management
 
-### Compute and Runtime
-- [databricks_cluster](./modules/databricks_cluster) - Manage compute clusters
-- [databricks_cluster_policy](./modules/databricks_cluster_policy) - Manage cluster policies
-- [databricks_library](./modules/databricks_library) - Manage cluster libraries
-- [databricks_global_init_script](./modules/databricks_global_init_script) - Manage global init scripts
-- [databricks_instance_pool](./modules/databricks_instance_pool) - Manage instance pools
+#### Groups
+- **[databricks_account_group](./modules/databricks_account_group)** - Create and manage account-level groups
+- **[databricks_group](./modules/databricks_group)** - Create and manage workspace-level groups
+- **[databricks_group_role](./modules/databricks_group_role)** - Create groups with comprehensive role assignments and permissions
+- **[databricks_group_member](./modules/databricks_group_member)** - Manage group memberships (add users/service principals to groups)
 
-### Pipeline and Workflow
-- [databricks_pipeline](./modules/databricks_pipeline) - Manage Delta Live Tables pipelines
-- [databricks_job](./modules/databricks_job) - Manage automated jobs
-- [databricks_sql_endpoint](./modules/databricks_sql_endpoint) - Manage SQL warehouses
-- [databricks_sql_query](./modules/databricks_sql_query) - Manage SQL queries
+#### Service Principals
+- **[databricks_service_principal_role](./modules/databricks_service_principal_role)** - Create service principals and assign workspace-level roles
 
-### Security and Users
-- [databricks_service_principal](./modules/databricks_service_principal) - Manage service principals
-- [databricks_user](./modules/databricks_user) - Manage users
-- [databricks_group](./modules/databricks_group) - Manage groups
-- [databricks_permissions](./modules/databricks_permissions) - Manage resource permissions
-- [databricks_ip_access_list](./modules/databricks_ip_access_list) - Manage IP access lists
+## Available Patterns
 
-### MLflow and Models
-- [databricks_mlflow_model](./modules/databricks_mlflow_model) - Manage MLflow models
-- [databricks_mlflow_experiment](./modules/databricks_mlflow_experiment) - Manage MLflow experiments
-- [databricks_model_serving](./modules/databricks_model_serving) - Manage model serving endpoints
-
-### Unity Catalog
-- [databricks_catalog](./modules/databricks_catalog) - Manage Unity Catalog catalogs
-- [databricks_schema](./modules/databricks_schema) - Manage Unity Catalog schemas
-- [databricks_metastore](./modules/databricks_metastore) - Manage Unity Catalog metastores
-- [databricks_external_location](./modules/databricks_external_location) - Manage external locations
+### Complete Setup Patterns
+- **[unified-databricks-setup](./patterns/unified-databricks-setup)** - Complete Databricks workspace setup with Azure AD integration, groups, service principals, and role assignments
 
 ## Requirements
 
@@ -51,62 +30,42 @@ This repository contains a collection of Terraform modules for managing Databric
 Each module can be used independently. Here's a basic example that combines multiple modules:
 
 ```hcl
-# Configure a cluster with a policy
-module "cluster_policy" {
-  source = "./modules/databricks_cluster_policy"
+# Create an account-level group
+module "account_group" {
+  source = "./modules/databricks_account_group"
 
-  name = "prod_policy"
-  definition = jsonencode({
-    "dbus_per_hour": {
-      "type": "range",
-      "maxValue": 10
-    }
-  })
+  display_name = "account-admins"
+  account_id   = "1234567890123456"
+  members      = ["admin@example.com"]
 }
 
-module "cluster" {
-  source = "./modules/databricks_cluster"
+# Create a workspace-level group with roles
+module "workspace_group" {
+  source = "./modules/databricks_group_role"
 
-  cluster_name  = "my_cluster"
-  policy_id     = module.cluster_policy.policy_id
-  spark_version = "11.3.x-scala2.12"
-  node_type_id  = "i3.xlarge"
-  
-  autoscale {
-    min_workers = 1
-    max_workers = 10
-  }
+  group_name       = "data-scientists"
+  external_id      = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"  # Azure AD Group ID
+  roles            = ["user", "notebook_admin", "job_admin"]
+  workspace_access = true
+  allow_cluster_create = true
+  databricks_sql_access = true
 }
 
-# Set up Unity Catalog resources
-module "catalog" {
-  source = "./modules/databricks_catalog"
+# Add additional members to the group
+module "group_membership" {
+  source = "./modules/databricks_group_member"
 
-  name    = "prod_catalog"
-  comment = "Production data catalog"
+  group_id  = module.workspace_group.group_id
+  member_id = "user@example.com"
 }
 
-module "schema" {
-  source = "./modules/databricks_schema"
+# Create a service principal with roles
+module "service_principal" {
+  source = "./modules/databricks_service_principal_role"
 
-  catalog_name = module.catalog.catalog_id
-  name         = "prod_schema"
-  comment      = "Production schema"
-}
-
-# Configure ML resources
-module "mlflow_experiment" {
-  source = "./modules/databricks_mlflow_experiment"
-
-  name = "/prod/experiment1"
-}
-
-module "model_serving" {
-  source = "./modules/databricks_model_serving"
-
-  name          = "prod_endpoint"
-  model_name    = "my_model"
-  model_version = "1"
+  application_id = "bbbbbbbb-cccc-dddd-eeee-ffffffffffff"
+  display_name   = "automation-sp"
+  roles          = ["user", "job_admin"]
 }
 ```
 

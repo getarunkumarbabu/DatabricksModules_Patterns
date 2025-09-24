@@ -46,18 +46,15 @@ module "user_groups" {
 # -----------------------------------------------------------------------------
 # Service Principals Role Assignment
 # -----------------------------------------------------------------------------
-# module "service_principals" {
-#   source = "../../modules/databricks_service_principal_role"
+module "service_principals" {
+  source = "../../modules/databricks_service_principal_role"
 
-#   for_each = { for sp in var.service_principals : sp.application_id => sp }
+  for_each = { for sp in var.service_principals : sp.application_id => sp }
 
-#   application_id       = each.value.application_id
-#   display_name         = lookup(each.value, "display_name", null)
-#   roles               = lookup(each.value, "roles", ["user"])
-#   workspace_access    = lookup(each.value, "workspace_access", true)
-#   allow_cluster_create = lookup(each.value, "allow_cluster_create", false)
-#   databricks_sql_access = lookup(each.value, "databricks_sql_access", false)
-# }
+  application_id = each.value.application_id
+  display_name   = lookup(each.value, "display_name", null)
+  roles          = lookup(each.value, "roles", ["user"])
+}
 
 # -----------------------------------------------------------------------------
 # Account Level Groups

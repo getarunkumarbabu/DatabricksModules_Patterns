@@ -7,17 +7,17 @@
 # ------------------------------------------------------------------------------
 output "group_id" {
   description = "ID of the Databricks group"
-  value       = databricks_group.this.id
+  value       = local.group_id
 }
 
 output "group_name" {
   description = "Display name of the Databricks group"
-  value       = databricks_group.this.display_name
+  value       = local.group_name_ref
 }
 
 output "external_id" {
   description = "External ID of the group (if managed externally)"
-  value       = databricks_group.this.external_id
+  value       = local.external_id_ref
 }
 
 # ------------------------------------------------------------------------------
@@ -29,28 +29,33 @@ output "workspace_access" {
 }
 
 output "allow_cluster_create" {
-  description = "Whether the group can create clusters"
-  value       = databricks_group.this.allow_cluster_create
+  description = "Whether the group can create clusters (only applicable for newly created groups)"
+  value       = var.external_id == null ? databricks_group.this[0].allow_cluster_create : null
 }
 
 output "databricks_sql_access" {
-  description = "Whether the group has Databricks SQL access"
-  value       = databricks_group.this.databricks_sql_access
+  description = "Whether the group has Databricks SQL access (only applicable for newly created groups)"
+  value       = var.external_id == null ? databricks_group.this[0].databricks_sql_access : null
 }
 
 # ------------------------------------------------------------------------------
 # Role Assignments
 # ------------------------------------------------------------------------------
 output "assigned_roles" {
-  description = "List of roles assigned to the group"
+  description = "List of roles configured for the group (assignment limited by provider version)"
   value       = var.roles
 }
 
 output "roles" {
-  description = "Map of role assignments with their status"
+  description = "Map of role assignments with their status (note: actual assignment limited by provider version)"
   value = {
-    for role in var.roles : role => true
+    for role in var.roles : role => "configured_but_not_assigned"
   }
+}
+
+output "role_assignment_note" {
+  description = "Note about role assignment limitations"
+  value       = "Role assignment is not supported in Databricks provider v0.6.2. Consider upgrading to a newer provider version for full role assignment functionality."
 }
 
 # ------------------------------------------------------------------------------
@@ -72,13 +77,14 @@ output "member_user_ids" {
 output "group_config" {
   description = "Complete group configuration summary"
   value = {
-    id                    = databricks_group.this.id
-    display_name          = databricks_group.this.display_name
-    external_id           = databricks_group.this.external_id
+    id                    = local.group_id
+    display_name          = local.group_name_ref
+    external_id           = local.external_id_ref
     workspace_access      = var.workspace_access
-    allow_cluster_create  = databricks_group.this.allow_cluster_create
-    databricks_sql_access = databricks_group.this.databricks_sql_access
+    allow_cluster_create  = var.external_id == null ? databricks_group.this[0].allow_cluster_create : null
+    databricks_sql_access = var.external_id == null ? databricks_group.this[0].databricks_sql_access : null
     assigned_roles        = var.roles
     member_count          = length(var.member_user_ids)
+    is_existing_group     = var.external_id != null
   }
 }

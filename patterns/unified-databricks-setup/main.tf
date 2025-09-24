@@ -9,9 +9,25 @@ terraform {
   required_providers {
     databricks = {
       source  = "databricks/databricks"
-      version = ">= 1.0.0"
+      version = ">= 0.3.0, < 1.0.0"
     }
   }
+
+  # Optional: Configure backend for state management
+  # backend "azurerm" {
+  #   resource_group_name  = var.resource_group_name
+  #   storage_account_name = var.storage_account_name
+  #   container_name       = var.container_name
+  #   key                  = var.key
+  # }
+}
+
+# -----------------------------------------------------------------------------
+# Databricks Provider Configuration
+# -----------------------------------------------------------------------------
+provider "databricks" {
+  host  = var.databricks_host
+  token = var.databricks_token
 }
 
 # -----------------------------------------------------------------------------
@@ -44,30 +60,30 @@ module "user_groups" {
 }
 
 # -----------------------------------------------------------------------------
-# Service Principals Role Assignment
+# Service Principals Role Assignment (Commented out - not supported in older provider version)
 # -----------------------------------------------------------------------------
-module "service_principals" {
-  source = "../../modules/databricks_service_principal_role"
-
-  for_each = { for sp in var.service_principals : sp.application_id => sp }
-
-  application_id = each.value.application_id
-  display_name   = lookup(each.value, "display_name", null)
-  roles          = lookup(each.value, "roles", ["user"])
-}
+# module "service_principals" {
+#   source = "../../modules/databricks_service_principal_role"
+# 
+#   for_each = { for sp in var.service_principals : sp.application_id => sp }
+# 
+#   application_id = each.value.application_id
+#   display_name   = lookup(each.value, "display_name", null)
+#   roles          = lookup(each.value, "roles", ["user"])
+# }
 
 # -----------------------------------------------------------------------------
-# Account Level Groups
+# Account Level Groups (Commented out - not supported in older provider version)
 # -----------------------------------------------------------------------------
-module "account_level_groups" {
-  source = "../../modules/databricks_account_group"
-
-  for_each = { for group in var.account_level_groups : group.display_name => group }
-
-  display_name = each.value.display_name
-  account_id   = var.account_id
-  members      = lookup(each.value, "members", null)
-}
+# module "account_level_groups" {
+#   source = "../../modules/databricks_account_group"
+# 
+#   for_each = { for group in var.account_level_groups : group.display_name => group }
+# 
+#   display_name = each.value.display_name
+#   account_id   = var.account_id
+#   members      = lookup(each.value, "members", null)
+# }
 
 # -----------------------------------------------------------------------------
 # Workspace Group Organization

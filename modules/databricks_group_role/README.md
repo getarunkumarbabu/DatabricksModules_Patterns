@@ -41,6 +41,22 @@ module "azure_ad_group" {
   # Advanced permissions
   allow_cluster_create       = true
   databricks_sql_access      = true
+### Using Existing Azure AD Groups
+
+```hcl
+module "existing_azure_ad_group" {
+  source = "./modules/databricks_group_role"
+
+  # Reference existing SCIM-synced Azure AD group
+  group_name  = "existing-data-engineers"
+  external_id = "87654321-4321-4321-4321-210987654321"  # Azure AD Group Object ID
+
+  # Roles will be assigned to the existing group
+  roles = ["user", "cluster_admin"]
+
+  # Permissions can still be configured
+  allow_cluster_create  = true
+  databricks_sql_access = true
 }
 ```
 

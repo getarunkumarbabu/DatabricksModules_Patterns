@@ -24,42 +24,238 @@ This pattern provides a comprehensive solution for managing Azure AD group role 
 1. **Workspace Access**: Proper authentication configured
 2. **Account Permissions**: Account admin or workspace admin access
 3. **SCIM Sync**: Active synchronization with Azure AD
+4. **PAT Token**: Personal Access Token generated for authentication
 
 ### Terraform Setup
 1. **Provider**: Databricks provider >= 1.0.0
-2. **Authentication**: Proper Databricks authentication configured
+2. **Authentication**: Databricks workspace URL and PAT token configured
+3. **Backend**: Optional Azure backend for state management
+
+## Authentication Configuration
+
+### Generate Personal Access Token (PAT)
+
+1. **Login to Databricks Workspace**:
+   - Navigate to your Azure Databricks workspace
+   - Click on your username in the top right corner
+   - Select "User Settings"
+
+2. **Generate Token**:
+   - Go to the "Developer" tab
+   - Click "Manage" next to "Access tokens"
+   - Click "Generate new token"
+   - Provide a comment (e.g., "Terraform Deployment")
+   - Set expiration (recommended: 90 days or less for security)
+   - Copy the generated token immediately (it won't be shown again)
+
+### Configure Authentication Variables
+
+Create a `terraform.tfvars` file or use environment variables:
+
+```hcl
+# Method 1: terraform.tfvars file
+databricks_host  = "https://adb-1234567890123456.12.azuredatabricks.net"
+databricks_token = "dapi-your-actual-pat-token-here"
+```
+
+```bash
+# Method 2: Environment variables (recommended for CI/CD)
+export DATABRICKS_HOST="https://adb-1234567890123456.12.azuredatabricks.net"
+export DATABRICKS_TOKEN="dapi-your-actual-pat-token-here"
+```
+
+### Find Your Databricks Workspace URL
+
+Your workspace URL can be found in the Azure portal:
+1. Go to your Databricks workspace resource
+2. Copy the "Workspace URL" from the overview page
+3. It should look like: `https://adb-<numbers>.<region>.azuredatabricks.net`
+
+## Files Overview
+
+- **`main.tf`**: Main configuration with provider setup and module calls
+- **`variables.tf`**: Input variable definitions with validation
+- **`outputs.tf`**: Output definitions for group IDs and configurations
+- **`example.tfvars`**: Sample configuration values
+- **`terraform.tfvars`**: Your actual configuration (create from example)
+- **`deploy.sh`**: Linux/Mac deployment script
+- **`deploy.ps1`**: Windows PowerShell deployment script
+- **`.gitignore`**: Prevents committing sensitive files
+
+## Security Considerations
+
+### PAT Token Security
+- **Never commit tokens to version control**
+- **Use short-lived tokens** (maximum 90 days recommended)
+- **Rotate tokens regularly** for production environments
+- **Use environment variables** instead of files for CI/CD pipelines
+- **Store tokens securely** using Azure Key Vault or similar services
+
+### State Management
+- **Use remote state** for team collaboration
+- **Enable state locking** to prevent concurrent modifications
+- **Backup state files** regularly
+- **Use Azure backend** for production deployments
+
+### Access Control
+- **Principle of least privilege** when assigning roles
+- **Regular audit** of group memberships and permissions
+- **Monitor token usage** in Databricks admin console
 
 ## Usage
 
-### Adding Existing AD Groups with Admin Privileges
+### Quick Start
 
-1. **Get Azure AD Group Object IDs**:
+1. **Clone the repository**:
 ```bash
-# Azure CLI
-az ad group list --query "[].{name:displayName, id:id}" -o table
-
-# PowerShell
-Get-AzureADGroup -Filter "DisplayName eq 'your-admin-group'" | Select ObjectId
+git clone <repository-url>
+cd DatabricksModules_Patterns/patterns/unified-databricks-setup
 ```
 
-2. **Configure Admin Groups**:
+2. **Configure Authentication**:
+```bash
+# Copy example configuration
+cp example.tfvars terraform.tfvars
+
+# Edit terraform.tfvars with your actual values
+# - Update databricks_host with your workspace URL
+# - Update databricks_token with your PAT token
+# - Configure your Azure AD groups and service principals
+```
+
+3. **Initialize and Deploy**:
+```bash
+# Initialize Terraform (downloads Databricks provider)
+terraform init
+
+# Review the deployment plan
+terraform plan
+
+# Apply the configuration
+terraform apply
+```
+
+#### Using Deployment Scripts
+
+For easier deployment, use the provided scripts:
+
+**Linux/Mac:**
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
+
+**Windows PowerShell:**
+```powershell
+.\deploy.ps1
+```
+
+**Validation Only:**
+```powershell
+# Validate configuration without deploying
+.\deploy.ps1 -ValidateOnly
+```
+
+**Skip Plan (Direct Apply):**
+```powershell
+# Apply directly without showing plan
+.\deploy.ps1 -SkipPlan
+```
+
+### Advanced Configuration
+
+#### Using Azure Backend for State Management
+
+For production deployments, configure Azure backend for state management:
+
 ```hcl
+# In main.tf, uncomment and configure the backend block:
+backend "azurerm" {
+  resource_group_name  = "your-resource-group"
+  storage_account_name = "yourstorageaccount"
+  container_name       = "tfstate"
+  key                  = "databricks-setup.tfstate"
+}
+
+# Add to terraform.tfvars:
+resource_group_name  = "your-resource-group"
+storage_account_name = "yourstorageaccount"
+```
+
+#### Environment Variables (Recommended for CI/CD)
+
+```bash
+export DATABRICKS_HOST="https://adb-1234567890123456.12.azuredatabricks.net"
+export DATABRICKS_TOKEN="dapi-your-actual-pat-token-here"
+export ARM_CLIENT_ID="your-azure-service-principal-client-id"
+export ARM_CLIENT_SECRET="your-azure-service-principal-secret"
+export ARM_SUBSCRIPTION_ID="your-subscription-id"
+export ARM_TENANT_ID="your-tenant-id"
+```
+
+### Using Existing Azure AD Groups
+
+This pattern now supports both creating new groups and referencing existing SCIM-synced Azure AD groups. When `external_id` is provided, the module will reference the existing group instead of creating a new one.
+
+#### Benefits of Using Existing Groups
+- **SCIM Synchronization**: Groups are automatically synced from Azure AD
+- **Centralized Management**: Group membership managed in Azure AD
+- **Reduced Complexity**: No need to manage group lifecycle in Terraform
+- **Consistency**: Single source of truth for group membership
+
+#### Finding Azure AD Group Object IDs
+
+```bash
+# Azure CLI - List all groups
+az ad group list --query "[].{name:displayName, id:id}" -o table
+
+# Azure CLI - Find specific group
+az ad group list --filter "displayName eq 'Data Scientists'" --query "[].id" -o tsv
+
+# PowerShell
+Get-AzureADGroup -Filter "DisplayName eq 'your-group-name'" | Select ObjectId
+```
+
+#### Configuring Existing Groups
+
+```hcl
+# Admin groups using existing Azure AD groups
 admin_groups = [
   {
-    display_name = "existing-admin-group@yourdomain.com"
-    external_id  = "12345678-1234-1234-1234-123456789012"  # Azure AD Object ID
+    display_name         = "existing-admins@yourdomain.com"
+    external_id          = "12345678-1234-1234-1234-123456789012"  # Required for existing groups
+    allow_cluster_create = true
+    databricks_sql_access = true
+  }
+]
+
+# User groups using existing Azure AD groups
+user_groups = [
+  {
+    display_name         = "existing-data-scientists@yourdomain.com"
+    external_id          = "87654321-4321-4321-4321-210987654321"  # Required for existing groups
+    roles               = ["user", "notebook_admin", "job_admin"]
     allow_cluster_create = true
     databricks_sql_access = true
   }
 ]
 ```
 
-3. **Deploy**:
-```bash
-terraform init
-terraform plan
-terraform apply
+#### Creating New Groups (When external_id is omitted)
+
+```hcl
+# New groups created by Terraform
+user_groups = [
+  {
+    display_name         = "new-data-engineers"  # No external_id = create new group
+    roles               = ["user", "cluster_admin"]
+    allow_cluster_create = true
+    databricks_sql_access = true
+  }
+]
 ```
+
+### Adding Existing AD Groups with Admin Privileges
 
 ### Configuration Structure
 
@@ -90,6 +286,17 @@ user_groups = [
 ```
 
 ## Configuration Parameters
+
+### Authentication Configuration
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-------------|------|---------|:--------:|
+| databricks_host | Databricks workspace URL | `string` | - | Yes |
+| databricks_token | Personal Access Token for authentication | `string` | - | Yes |
+| resource_group_name | Azure resource group for state storage | `string` | `null` | No |
+| storage_account_name | Azure storage account for state storage | `string` | `null` | No |
+| container_name | Azure storage container for state | `string` | `tfstate` | No |
+| key | Terraform state file key | `string` | `databricks-setup.tfstate` | No |
 
 ### Admin Groups
 
@@ -443,6 +650,26 @@ account_id = null
 - Access certification
 - Change management
 - Documentation maintenance
+
+## Known Limitations
+
+### Provider Version Compatibility
+- **Databricks Provider v0.6.2**: Role assignment resources (`databricks_group_role`, `databricks_service_principal_role`) are not available
+- **Account-level Groups**: Account-level group management is not supported in older provider versions
+- **Workspace Access**: `databricks_workspace_access` resource is not available
+
+### Recommended Upgrades
+For full functionality including role assignments, consider upgrading:
+- **Terraform**: >= 1.0.0 (currently using 1.13.2)
+- **Databricks Provider**: >= 1.0.0 (currently using 0.6.2)
+
+### Current Capabilities
+✅ **Group Creation**: Azure AD integrated groups  
+✅ **Basic Permissions**: Cluster create, SQL access settings  
+✅ **SCIM Integration**: External ID management  
+✅ **Member Management**: Direct group membership  
+
+⚠️ **Role Assignment**: Configured but not assigned (provider limitation)
 
 ## Maintenance
 

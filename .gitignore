@@ -1,0 +1,4 @@
+patterns/unified-databricks-setup/.terraform.tfstate.lock.info
+patterns/unified-databricks-setup/deploy.ps1
+patterns/unified-databricks-setup/deploy.sh
+patterns/unified-databricks-setup/.terraform.lock.hcl

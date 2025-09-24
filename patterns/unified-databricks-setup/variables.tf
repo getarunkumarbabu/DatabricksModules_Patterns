@@ -3,6 +3,57 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
+# Databricks Authentication Configuration
+# -----------------------------------------------------------------------------
+variable "databricks_host" {
+  description = "Databricks workspace URL (e.g., https://adb-1234567890123456.12.azuredatabricks.net)"
+  type        = string
+
+  validation {
+    condition     = can(regex("^https://adb-[0-9]+\\.[0-9]+\\.azuredatabricks\\.net$", var.databricks_host))
+    error_message = "Databricks host must be a valid Azure Databricks workspace URL."
+  }
+}
+
+variable "databricks_token" {
+  description = "Databricks Personal Access Token (PAT) for authentication"
+  type        = string
+  sensitive   = true
+
+  validation {
+    condition     = length(var.databricks_token) > 0
+    error_message = "Databricks token cannot be empty."
+  }
+}
+
+# -----------------------------------------------------------------------------
+# Optional: Azure Backend Configuration
+# -----------------------------------------------------------------------------
+variable "resource_group_name" {
+  description = "Azure resource group name for Terraform state storage"
+  type        = string
+  default     = null
+}
+
+variable "storage_account_name" {
+  description = "Azure storage account name for Terraform state storage"
+  type        = string
+  default     = null
+}
+
+variable "container_name" {
+  description = "Azure storage container name for Terraform state"
+  type        = string
+  default     = "tfstate"
+}
+
+variable "key" {
+  description = "Terraform state file key/name"
+  type        = string
+  default     = "databricks-setup.tfstate"
+}
+
+# -----------------------------------------------------------------------------
 # Admin Groups Configuration
 # -----------------------------------------------------------------------------
 variable "admin_groups" {
@@ -38,6 +89,8 @@ variable "user_groups" {
     allow_cluster_create  = optional(bool, false)
     databricks_sql_access = optional(bool, false)
   }))
+
+  default = []
 
   validation {
     condition     = alltrue([for g in var.user_groups : length(g.display_name) > 0])

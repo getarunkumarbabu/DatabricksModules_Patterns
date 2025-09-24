@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    databricks = {
+      source = "databricks/databricks"
+    }
+  }
+}
+
 resource "databricks_account_group" "this" {
   display_name = var.display_name
 }

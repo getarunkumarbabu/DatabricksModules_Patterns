@@ -1,4 +1,4 @@
-﻿variable "application_id" {
+variable "application_id" {
   description = "Azure AD application ID for the service principal"
   type        = string
 }

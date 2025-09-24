@@ -22,7 +22,7 @@ terraform {
 # ------------------------------------------------------------------------------
 resource "databricks_group" "this" {
   display_name               = var.group_name
-  external_id                = var.external_id  # Include external_id if provided (for SCIM groups)
+  external_id                = var.external_id # Include external_id if provided (for SCIM groups)
   allow_cluster_create       = var.allow_cluster_create
   allow_instance_pool_create = var.allow_instance_pool_create
   databricks_sql_access      = var.databricks_sql_access

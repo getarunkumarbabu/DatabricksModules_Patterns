@@ -1,4 +1,4 @@
-﻿output "service_principal_id" {
+output "service_principal_id" {
   description = "The ID of the created service principal"
   value       = databricks_service_principal.this.id
 }

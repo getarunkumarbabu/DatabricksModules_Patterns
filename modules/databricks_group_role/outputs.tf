@@ -29,6 +29,11 @@ output "allow_cluster_create" {
   value       = databricks_group.this.allow_cluster_create
 }
 
+output "allow_instance_pool_create" {
+  description = "Instance pool creation permission"
+  value       = databricks_group.this.allow_instance_pool_create
+}
+
 output "databricks_sql_access" {
   description = "SQL access status"
   value       = databricks_group.this.databricks_sql_access

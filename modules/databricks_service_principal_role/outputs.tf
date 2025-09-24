@@ -12,3 +12,8 @@ output "display_name" {
   description = "The display name of the service principal"
   value       = databricks_service_principal.this.display_name
 }
+
+output "roles" {
+  description = "List of roles assigned to the service principal"
+  value       = var.roles
+}

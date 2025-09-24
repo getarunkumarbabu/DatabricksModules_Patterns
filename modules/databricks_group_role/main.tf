@@ -21,8 +21,12 @@ terraform {
 # Databricks Group Resource (create new or reference existing SCIM group)
 # ------------------------------------------------------------------------------
 resource "databricks_group" "this" {
-  display_name = var.group_name
-  external_id  = var.external_id  # Include external_id if provided (for SCIM groups)
+  display_name               = var.group_name
+  external_id                = var.external_id  # Include external_id if provided (for SCIM groups)
+  allow_cluster_create       = var.allow_cluster_create
+  allow_instance_pool_create = var.allow_instance_pool_create
+  databricks_sql_access      = var.databricks_sql_access
+  workspace_access           = var.workspace_access
 
   # Lifecycle management
   lifecycle {
@@ -43,18 +47,14 @@ resource "databricks_group_member" "this" {
   member_id = each.value
 }
 
-# ------------------------------------------------------------------------------
-# Role Assignments (Now available in v1.90.0)
-# ------------------------------------------------------------------------------
-# Note: databricks_group_role resource is available in Databricks provider v1.0.0+
-# Uncomment the following block to enable role assignments for groups
-# resource "databricks_group_role" "this" {
-#   for_each = toset(var.roles)
-#
-#   group_id = databricks_group.this.id
-#   role     = each.value
-#
-#   depends_on = [
-#     databricks_group.this
-#   ]
-# }
+
+resource "databricks_group_role" "this" {
+  for_each = toset(var.roles)
+
+  group_id = databricks_group.this.id
+  role     = each.value
+
+  depends_on = [
+    databricks_group.this
+  ]
+}

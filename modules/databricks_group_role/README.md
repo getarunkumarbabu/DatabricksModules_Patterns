@@ -1,102 +1,54 @@
-# Databricks Group Role Assignment Module# Databricks Group Role Assignment Module
+# Databricks Group Role Assignment Module
 
+This module creates and manages Databricks groups with comprehensive role assignments and access controls. Enhanced for Azure AD integration with advanced permissions management.
 
+## Features
 
-This module creates and manages Databricks groups with comprehensive role assignments and access controls. Enhanced for Azure AD integration with advanced permissions management.This module creates and manages Databricks groups with comprehensive role assignments and access controls. Enhanced for Azure AD integration with advanced permissions management.
+- **Azure AD Integration**: Support for external groups via `external_id`
+- **Granular Access Control**: Fine-tuned permissions for clusters, instance pools, and SQL access
+- **Role-Based Access**: Multiple workspace-level roles assignment using `databricks_group_role` resource (under investigation)
+- **Direct Member Management**: Optional direct user membership management
+- **Flexible Configuration**: Comprehensive variable options for different use cases
 
+## Requirements
 
+- **Databricks Provider**: `>= 1.0.0` (tested with v1.90.0)
+- **Terraform**: `>= 1.0`
 
-## Features## Features
+## Usage
 
-
-
-- **Azure AD Integration**: Support for external groups via `external_id`- **Azure AD Integration**: Support for external groups via `external_id`
-
-- **Granular Access Control**: Fine-tuned permissions for clusters, instance pools, and SQL access- **Granular Access Control**: Fine-tuned permissions for clusters, instance pools, and SQL access
-
-- **Role-Based Access**: Multiple workspace-level roles assignment- **Role-Based Access**: Multiple workspace-level roles assignment
-
-- **Direct Member Management**: Optional direct user membership management- **Direct Member Management**: Optional direct user membership management
-
-- **Flexible Configuration**: Comprehensive variable options for different use cases- **Flexible Configuration**: Comprehensive variable options for different use cases
-
-
-
-## Usage## Usage
-
-
-
-### Basic Usage### Basic Usage
-
-
-
-```hcl```hcl
-
-module "databricks_group" {module "databricks_group" {
-
-  source = "./modules/databricks_group_role"  source = "./modules/databricks_group_role"
-
-
-
-  group_name = "data-scientists"  group_name = "data-scientists"
-
-  roles      = ["user", "notebook_admin"]  roles      = ["user", "notebook_admin"]
-
-
-
-  # Access permissions  # Access permissions
-
-  allow_cluster_create = true  allow_cluster_create = true
-
-  databricks_sql_access = true  databricks_sql_access = true
-
-}}
-
-``````
-
-
-
-### Azure AD Integration### Azure AD Integration
-
-
-
-```hcl```hcl
-
-module "azure_ad_group" {module "azure_ad_group" {
-
-  source = "./modules/databricks_group_role"  source = "./modules/databricks_group_role"
-
-
-
-  group_name  = "azure-data-engineers"  group_name  = "azure-data-engineers"
-
-  external_id = "12345678-1234-1234-1234-123456789012"  # Azure AD Group Object ID  external_id = "12345678-1234-1234-1234-123456789012"  # Azure AD Group Object ID
-
-
-
-  roles = ["user", "cluster_admin", "job_admin"]  roles = ["user", "cluster_admin", "job_admin"]
-
-
-
-  # Advanced permissions  # Advanced permissions
-
-  allow_cluster_create       = true  allow_cluster_create       = true
-
-  databricks_sql_access      = true  databricks_sql_access      = true
-
-}### Using Existing Azure AD Groups
-
-```
+### Basic Usage
 
 ```hcl
-
-### With Direct Member Managementmodule "existing_azure_ad_group" {
-
+module "databricks_group" {
   source = "./modules/databricks_group_role"
 
-```hcl
+  group_name = "data-scientists"
+  roles      = ["user", "notebook_admin"]
 
-module "managed_group" {  # Reference existing SCIM-synced Azure AD group
+  # Access permissions
+  allow_cluster_create = true
+  databricks_sql_access = true
+}
+```
+
+### Azure AD Integration
+
+```hcl
+module "azure_ad_group" {
+  source = "./modules/databricks_group_role"
+
+  group_name  = "azure-data-engineers"
+  external_id = "12345678-1234-1234-1234-123456789012"  # Azure AD Group Object ID
+
+  roles = ["user", "cluster_admin", "job_admin"]
+
+  # Advanced permissions
+  allow_cluster_create       = true
+  allow_instance_pool_create = true
+  databricks_sql_access      = true
+}
+```
 
   source = "./modules/databricks_group_role"  group_name  = "existing-data-engineers"
 

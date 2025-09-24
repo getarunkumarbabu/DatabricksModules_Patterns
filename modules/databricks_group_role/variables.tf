@@ -27,6 +27,12 @@ variable "allow_cluster_create" {
   default     = false
 }
 
+variable "allow_instance_pool_create" {
+  description = "Allow instance pool creation"
+  type        = bool
+  default     = false
+}
+
 variable "databricks_sql_access" {
   description = "Grant Databricks SQL access"
   type        = bool

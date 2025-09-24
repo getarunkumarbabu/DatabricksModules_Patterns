@@ -40,7 +40,7 @@ module "admin_groups" {
 
   group_name  = each.value.display_name
   external_id = lookup(each.value, "external_id", null)
-  roles       = ["admin"]
+  roles       = [] # Temporarily disable role assignment while testing
 }
 
 # -----------------------------------------------------------------------------

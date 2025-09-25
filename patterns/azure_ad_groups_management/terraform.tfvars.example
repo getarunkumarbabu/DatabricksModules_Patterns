@@ -1,0 +1,20 @@
+databricks_host  = "https://your-workspace.cloud.databricks.com/"
+databricks_token = "your-token-here"  # Never commit this to version control!
+
+# Admin Groups - Add your Azure AD groups here
+admin_groups = {
+  # Example:
+  # "YourAdminGroup" = {
+  #   display_name = "YourAdminGroup"
+  #   external_id  = "your-azure-ad-object-id"
+  # }
+}
+
+# User Groups - Add your Azure AD groups here
+user_groups = {
+  # Example:
+  # "YourUserGroup" = {
+  #   display_name = "YourUserGroup"
+  #   external_id  = "your-azure-ad-object-id"
+  # }
+}
